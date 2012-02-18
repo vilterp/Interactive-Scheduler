@@ -1,0 +1,100 @@
+<html>
+  <head>
+    <title>Drag &amp; Drop mockup</title>
+    <link type="text/css" href="jquery-ui/css/ui-lightness/jquery-ui-1.8.17.custom.css" rel="Stylesheet" />
+    <script src="underscore.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" src="jquery-ui/js/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="jquery-ui/js/jquery-ui-1.8.17.custom.min.js"></script>
+    <script src="backbone.js" type="text/javascript" charset="utf-8"></script>
+    <style type="text/css" media="screen">
+      td.quarter {
+        height: 100px;
+        width: 100px;
+      }
+      .course {
+        border: 1px solid black;
+        background-color: lightblue;
+        padding: 2px;
+        cursor: move;
+      }
+      .quarter.can-take-course {
+        background-color: lightgreen;
+      }
+      .quarter.can-take-course.hover {
+        background-color: #09C300; /*darker green*/
+      }
+    </style>
+    <script type="text/javascript" charset="utf-8">
+      $(function() {
+        
+        window.Course = Backbone.Model.extend({
+          
+        })
+        
+        window.Quarter = Backbone.Collection.extend({
+          model: Course
+        })
+        
+        window.Year = Backbone.Model.extend({
+          // Quarter fall, winter, spring
+        })
+        
+        window.Schedule = Backbone.Model.extend({
+          // Year first, second, third, fourth
+        })
+        
+        $('.draggable').draggable()
+        $('.quarter').droppable({
+          activeClass: 'can-take-course',
+          hoverClass: 'hover',
+          tolerance: 'pointer',
+          drop: function(event, ui) {
+            console.log('hello')
+            console.log(event, ui)
+          }
+        })
+        
+        var schedule = new Schedule();
+        schedule.set('first', new Year());
+        schedule.set('second', new Year());
+        schedule.set('third', new Year());
+        schedule.set('fourth', new Year());
+        // ...
+      })
+    </script>
+  </head>
+  <body>
+    <h1>Drag &amp; Drop Mockup</h1>
+    <table width="100%">
+      <tr>
+        <td id="schedule-container">
+          <table id="schedule" width="100%" border="1">
+            <tr class="year">
+              <td class="quarter"></td>
+              <td class="quarter"></td>
+              <td class="quarter"></td>
+            </tr>          
+            <tr class="year">
+              <td class="quarter"></td>
+              <td class="quarter"></td>
+              <td class="quarter"></td>
+            </tr>          
+            <tr class="year">
+              <td class="quarter"></td>
+              <td class="quarter"></td>
+              <td class="quarter"></td>
+            </tr>          
+            <tr class="year">
+              <td class="quarter"></td>
+              <td class="quarter"></td>
+              <td class="quarter"></td>
+            </tr>
+          </table>
+        </td>
+        <td id="majors-container">
+          <div class="course draggable">CMSC 16200: Introduction to Computer Science II</div>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
