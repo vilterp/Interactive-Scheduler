@@ -1,5 +1,6 @@
 import re
 import string
+import json
 
 # Dropbox version
 
@@ -17,8 +18,23 @@ import string
 # 'plus' is kind of like 'and' but it's only used 3 times
 # so we can do that by hand
 
+def num_reqs(reqs):
+  res = 0
+  for req in reqs:
+    if type(req) is str:
+      res += 1
+    else:
+      res += num_reqs(req)
+  return res
+
+def dept_of_course(s):
+  try:
+    return re.search('^[a-zA-Z]{4}', s).group()
+  except AttributeError:
+    return None
+
 def hasCourses(s):
-  return re.search('\d\d\d\d\d', s) is not None
+  return re.search('\d{5}', s) is not None
 
 def consentReq(s):
   res = re.search('[Cc]onsent.*', s)
@@ -27,54 +43,70 @@ def consentReq(s):
   except AttributeError:
     return None
 
+# dept is needed because sequence strings sometimes have no departments attached
 def sequenceParse(s, dept):
-  res = re.search('\d\d\d\d\d$', s)
+  res = re.search('\d{5}$', s)
   if res:
     coursenumber = res.group()
-    return ' '.join([dept, coursenumber])
+    return '{0} {1}'.format(dept, coursenumber)
   else:
-    return None
+    return None    
 
 #prereqs = []
 #for major, classes in courses.iteritems():
 #  for cl in classes:
 #    prereqs += [cl['prereq_text']]
 
-def parse_prereq(s):
+def parse_preq(s):
   if not hasCourses(s):
     return [s]
   else:
-    prereqs = re.split('and|;', s)
-    prereqs = [re.split(' or|,|/', req) for req in prereqs]
+    prereqs    = re.split('and|;', s)
+    prereqs    = [re.split(' or|,|/', req) for req in prereqs]
+    default_dept = prereqs[0][0].strip()[:4]
     newprereqs = []
 
     for group in prereqs:
-      dept = group[0].strip()[:4]
-      firstelt = group[0].strip()
-
-      if '-' in firstelt:
-        firstelt = sequenceParse(firstelt, dept)
-
-      newgroup = [firstelt]
-
-      for equivalent in group[1:]:
+      group_default = group[0].strip()[:4]
+      print default_dept
+      newgroup = []
+      for equivalent in group:
         consentres = consentReq(equivalent)
+        indiv_dept = dept_of_course(equivalent.strip())
 
         if consentres:
           newgroup.append(equivalent)
+        elif '-' in equivalent:
+          # there's some minor but necessary code duplication here with the
+          # next elif branch. Maybe will pull out as a function but this is 
+          # pretty clear
+          if indiv_dept:      dept = indiv_dept
+          elif group_default: dept = group_default
+          else:               dept = default_dept
+          equivalent = sequenceParse(equivalent, dept)
+          newgroup.append(equivalent)
         else:
-          if '-' in equivalent:
-            equivalent = sequenceParse(equivalent, dept)
+          coursenum = re.search('\d{5}', equivalent)
+          if coursenum:
+            if indiv_dept:      dept = indiv_dept
+            elif group_default: dept = group_default
+            else:               dept = default_dept
+            equivalent = '{0} {1}'.format(dept, coursenum.group())
             newgroup.append(equivalent)
-          else:
-            equivalent = re.search('\d\d\d\d\d', equivalent)
-
-            if equivalent:
-              equivalent = ' '.join([dept, equivalent.group()])
-              newgroup.append(equivalent)
-
       newprereqs.append(newgroup)
-
     return newprereqs
-      # first split at 'and' ';' (maybe ',', although this interferes with ors)
-    #prereqs = re.findall('.... [0-9][0-9][0-9][0-9][0-9]',s)
+
+
+def prereqs_to_bin(prereqs):
+  andbin = {}
+  andbin['num'] = len(prereqs)
+  andbin['list'] = []
+  for orgroup in prereqs:
+    orbin = {}
+    orbin['num']  = 1
+    orbin['list'] = [x for x in orgroup]
+    andbin['list'].append(orbin)
+  return andbin
+
+def prereqtext_to_json(s):
+  return json.dumps(prereqs_to_bin(parse_preq(s)))

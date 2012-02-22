@@ -136,7 +136,7 @@ def insert_into_db(courses):
                         notes=course_dict['notes'],
                         description=course_dict['desc'],
                         prereq_text=course_dict['prereq_text'],
-                        prereq_json=json.dumps(parse_prereq(course_dict['prereq_text'])) if course_dict['prereq_text'] else None,
+                        prereq_json=prereqtext_to_json(course_dict['prereq_text']) if course_dict['prereq_text'] else None,
                         terms_offered=course_dict['terms_offered'],
                         credit=course_dict['credit'])
       elif len(res1) == 1:
