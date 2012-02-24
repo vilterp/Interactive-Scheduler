@@ -13,10 +13,10 @@ import json
 # courses with consent/other special reqs should be in yellow
 
 # if a phrase contains an 'or', split by commas
-# check for phrase "recommended"
+# check for phrase "recommended".
 
 # 'plus' is kind of like 'and' but it's only used 3 times
-# so we can do that by hand
+# so we can do that by hand.
 
 def num_reqs(reqs):
   res = 0
@@ -59,7 +59,7 @@ def sequenceParse(s, dept):
 
 def parse_preq(s):
   if not hasCourses(s):
-    return [s]
+    return [[s]]
   else:
     prereqs    = re.split('and|;', s)
     prereqs    = [re.split(' or|,|/', req) for req in prereqs]
