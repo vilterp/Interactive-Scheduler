@@ -7,7 +7,8 @@ jQuery ->
   class Bin extends Completable
     type: 'bin'
     
-    initialize: (title, num_required, sub_completables) ->
+    constructor: (title, num_required, sub_completables) ->
+      super()
       this.set('title', title)
       this.set('num_required', num_required)
       this.set('sub_completables', new CompletablesList(sub_completables))
@@ -112,7 +113,8 @@ jQuery ->
       $(@el).html('foo')
       $(@el).html(@template({
         num_complete: @model.num_complete(),
-        num_required: @model.get('num_required')
+        num_required: @model.get('num_required'),
+        title: if @model.get('title')? then @model.get('title') else null
       }))
       $(@el).addClass(if @model.is_valid() then 'fulfilled' else 'not-fulfilled')
       list = $(@el).find('ul')

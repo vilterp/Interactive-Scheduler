@@ -20,17 +20,14 @@
 
       __extends(Bin, _super);
 
-      function Bin() {
-        Bin.__super__.constructor.apply(this, arguments);
-      }
-
       Bin.prototype.type = 'bin';
 
-      Bin.prototype.initialize = function(title, num_required, sub_completables) {
+      function Bin(title, num_required, sub_completables) {
+        Bin.__super__.constructor.call(this);
         this.set('title', title);
         this.set('num_required', num_required);
-        return this.set('sub_completables', new CompletablesList(sub_completables));
-      };
+        this.set('sub_completables', new CompletablesList(sub_completables));
+      }
 
       Bin.initialize_from_json = function(json) {
         var completable, sub_completables, _i, _len, _ref;
@@ -271,7 +268,8 @@
         $(this.el).html('foo');
         $(this.el).html(this.template({
           num_complete: this.model.num_complete(),
-          num_required: this.model.get('num_required')
+          num_required: this.model.get('num_required'),
+          title: this.model.get('title') != null ? this.model.get('title') : null
         }));
         $(this.el).addClass(this.model.is_valid() ? 'fulfilled' : 'not-fulfilled');
         list = $(this.el).find('ul');

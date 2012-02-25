@@ -38,6 +38,9 @@
       </ul>
     </script>
     <script type="text/template" id="bin-template">
+      <% if(title != null) { %>
+        <div class="bin-title"><%= title %></div>
+      <% } %>
       <div class="bin-stats"><%= num_complete %> / <%= num_required %> Complete</div>
       <ul class="bin-items">
       </ul>
