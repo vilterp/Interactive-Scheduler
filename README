@@ -4,4 +4,4 @@ $ ./compile_coffeescript.sh
 
 $ python server.py
 
-Go to http://localhost:500/
+Go to http://localhost:5000/
