@@ -47,12 +47,12 @@
         return new Bin(json.title, json.num, sub_completables);
       };
 
-      Bin.prototype.numComplete = function() {
+      Bin.prototype.num_complete = function() {
         return 0;
       };
 
-      Bin.prototype.isValid = function() {
-        return this.numComplete() === this.get('num_required');
+      Bin.prototype.is_valid = function() {
+        return this.num_complete() === this.get('num_required');
       };
 
       return Bin;
@@ -168,10 +168,8 @@
 
       ScheduleView.prototype.render = function() {
         var i, _ref;
-        console.log('rendering schedule view');
         $(this.el).html(this.template());
         for (i = 0, _ref = this.subviews.length; 0 <= _ref ? i < _ref : i > _ref; 0 <= _ref ? i++ : i--) {
-          console.log(i, "#quarter-" + (Math.floor(i / 3)) + "-" + (i % 3), $(this.el).find("#quarter-" + (Math.floor(i / 4)) + "-" + (i % 4)));
           $(this.el).find("#quarter-" + (Math.floor(i / 3)) + "-" + (i % 3)).empty().append(this.subviews[i].render().el);
         }
         return this;
@@ -197,11 +195,9 @@
       };
 
       QuarterView.prototype.render = function() {
-        console.log('rendering quarter view');
         $(this.el).html(this.template({
           courses: this.model.get('courses').toJSON()
         }));
-        console.log(this.attributes);
         return this;
       };
 
@@ -225,8 +221,8 @@
       };
 
       AppView.prototype.render = function() {
-        console.log('rendering app view');
         $(this.el).find('#schedule-viz-container').append(this.schedule_view.render().el);
+        $(this.el).find('#major-panel-container').append(this.bin_view.render().el);
         return this;
       };
 
@@ -243,6 +239,10 @@
 
       BinView.prototype.tagName = 'div';
 
+      BinView.prototype.attributes = {
+        "class": 'bin'
+      };
+
       BinView.prototype.template = _.template($('#bin-template').html());
 
       BinView.prototype.initialize = function() {
@@ -252,24 +252,28 @@
           var new_view;
           new_view = null;
           if (completable.type === 'course') {
-            new_view = new CourseView(completable);
+            new_view = new CourseView({
+              model: completable
+            });
           } else if (completable.type === 'bin') {
-            new_view = new BinView(completable);
+            new_view = new BinView({
+              model: completable
+            });
           }
           return _this.subviews.push(new_view);
         });
       };
 
       BinView.prototype.render = function() {
-        var list, _ref,
+        var list,
           _this = this;
-        console.log('rendering bin view');
+        console.log('rendering BinView', this);
         $(this.el).html('foo');
-        $(this.el).html(this.template());
-        $(this.el).addClass((_ref = this.model.isValid()) != null ? _ref : {
-          'fulfilled': 'not-fulfilled'
-        });
-        $(this.el).find('span').html("" + (this.model.numComplete()) + " / " + (this.model.get('num_required')) + " complete");
+        $(this.el).html(this.template({
+          num_complete: this.model.num_complete(),
+          num_required: this.model.get('num_required')
+        }));
+        $(this.el).addClass(this.model.is_valid() ? 'fulfilled' : 'not-fulfilled');
         list = $(this.el).find('ul');
         _.each(this.subviews, function(subview) {
           return list.append($('<li class="bin-item">').append(subview.render().el));
@@ -291,8 +295,8 @@
       CourseView.prototype.tagName = 'div';
 
       CourseView.prototype.render = function() {
-        console.log('rendering course view');
-        $(this.el).addClass('course-in-bin').html(this.model.title);
+        console.log('rendering CourseView', this);
+        $(this.el).addClass('course-in-bin').html(this.model.get('title'));
         return this;
       };
 
@@ -332,7 +336,6 @@
     });
     return $.getJSON('/static/sample-schedule.json', function(sample_schedule) {
       var course, course_list, enum_years, quarter_model, season, year, _j, _len;
-      console.log('got the schedule');
       enum_years = ['first', 'second', 'third', 'fourth'];
       for (year = 0; year <= 3; year++) {
         for (season = 0; season <= 2; season++) {
@@ -348,9 +351,10 @@
       }
       return $.getJSON('/static/major_reqs/cmsc.json', function(cmsc_bin) {
         var app_view, bin_view, cmsc;
-        console.log('got cmsc');
         cmsc = Bin.initialize_from_json(cmsc_bin);
-        bin_view = null;
+        bin_view = new BinView({
+          model: cmsc
+        });
         app_view = new AppView(schedule_view, bin_view);
         return app_view.render();
       });

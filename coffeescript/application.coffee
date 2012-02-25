@@ -21,11 +21,11 @@ jQuery ->
           sub_completables.push(new Course(completable))
       return new Bin(json.title, json.num, sub_completables)
     
-    numComplete: ->
+    num_complete: ->
       return 0 # TODO: validate subcompletables
     
-    isValid: ->
-      return this.numComplete() == this.get('num_required')
+    is_valid: ->
+      return this.num_complete() == this.get('num_required')
   
   class CompletablesList extends Backbone.Collection
   
@@ -66,10 +66,8 @@ jQuery ->
     add_subview: (subview) ->
       @subviews.push(subview)
     render: ->
-      console.log('rendering schedule view')
       $(@el).html(@template())
       for i in [0...@subviews.length]
-        console.log(i, "#quarter-#{Math.floor(i/3)}-#{i%3}", $(@el).find("#quarter-#{Math.floor(i/4)}-#{i%4}"))
         $(@el).find("#quarter-#{Math.floor(i/3)}-#{i%3}").empty().append(@subviews[i].render().el)
       return this
     
@@ -80,10 +78,7 @@ jQuery ->
     initialize: ->
       @model.get('courses').bind('add', this.render, this)
     render: ->
-      console.log('rendering quarter view')
       $(@el).html(@template({courses: @model.get('courses').toJSON()}))
-      
-      console.log(@attributes)
       return this
   
   class AppView extends Backbone.View
@@ -93,31 +88,33 @@ jQuery ->
       @bin_view = bin_view
       @el = $('#scheduler-app')
     render: ->
-      console.log('rendering app view')
       $(@el).find('#schedule-viz-container').append(@schedule_view.render().el)
-                                            #.append(@bin_view.render().el)
+      $(@el).find('#major-panel-container').append(@bin_view.render().el)
       return this
     
     # handle top-level events here...
   
   class BinView extends Backbone.View
     tagName: 'div'
+    attributes: { class: 'bin' }
     template: _.template($('#bin-template').html())
     initialize: ->
       @subviews = []
       @model.get('sub_completables').each (completable) =>
         new_view = null
         if completable.type == 'course'
-          new_view = new CourseView(completable)
+          new_view = new CourseView({model: completable})
         else if completable.type == 'bin'
-          new_view = new BinView(completable)
+          new_view = new BinView({model: completable})
         @subviews.push(new_view)
     render: ->
-      console.log('rendering bin view')
+      console.log 'rendering BinView', this
       $(@el).html('foo')
-      $(@el).html(@template())
-      $(@el).addClass(@model.isValid() ? 'fulfilled' : 'not-fulfilled')
-      $(@el).find('span').html("#{@model.numComplete()} / #{@model.get('num_required')} complete")
+      $(@el).html(@template({
+        num_complete: @model.num_complete(),
+        num_required: @model.get('num_required')
+      }))
+      $(@el).addClass(if @model.is_valid() then 'fulfilled' else 'not-fulfilled')
       list = $(@el).find('ul')
       _.each @subviews, (subview) =>
         list.append($('<li class="bin-item">').append(subview.render().el))
@@ -126,8 +123,8 @@ jQuery ->
   class CourseView extends Backbone.View
     tagName: 'div'
     render: ->
-      console.log('rendering course view')
-      $(@el).addClass('course-in-bin').html(@model.title)
+      console.log 'rendering CourseView', this
+      $(@el).addClass('course-in-bin').html(@model.get('title'))
       return this
   
   
@@ -154,7 +151,6 @@ jQuery ->
   
   # load sample schedule state
   $.getJSON '/static/sample-schedule.json', (sample_schedule) =>
-    console.log('got the schedule')
     enum_years = ['first', 'second', 'third', 'fourth']
     for year in [0..3]
       for season in [0..2]
@@ -164,10 +160,8 @@ jQuery ->
           quarter_model.get('courses').add(new Course({title: course}))
     # load test bin
     $.getJSON '/static/major_reqs/cmsc.json', (cmsc_bin) =>
-      console.log('got cmsc')
       cmsc = Bin.initialize_from_json(cmsc_bin)
-      # bin_view = new BinView(cmsc)
-      bin_view = null
+      bin_view = new BinView({model: cmsc})
       # initialize the app
       app_view = new AppView(schedule_view, bin_view)
       app_view.render()
