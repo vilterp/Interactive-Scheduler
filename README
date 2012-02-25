@@ -1,0 +1,7 @@
+How to get up and running and start developing:
+
+$ ./compile_coffeescript.sh
+
+$ python server.py
+
+Go to http://localhost:500/
