@@ -1,2 +1,2 @@
 #!/bin/bash
-coffee -cw -o frontend/js frontend/coffeescript/
+coffee -cw -o static/js coffeescript/

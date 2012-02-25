@@ -1,0 +1,938 @@
+{
+ "num": 4, 
+ "list": [
+  {
+   "num": 4, 
+   "list": [
+    {
+     "num": 1, 
+     "list": [
+      {
+       "description": "", 
+       "title": "Introduction to Computer Science I", 
+       "notes": "This course meets the general education requirement in the mathematical sciences.", 
+       "credit": "100", 
+       "prereq_json": {
+        "num": 1, 
+        "list": [
+         {
+          "num": 1, 
+          "list": [
+           "Plac 15100", 
+           " consent of departmental counselor"
+          ]
+         }
+        ]
+       }, 
+       "terms_offered": "Autumn, Summer", 
+       "prereq_text": "Placement into MATH 15100 or equivalent, or consent of departmental counselor"
+      }, 
+      {
+       "description": "Programming in a functional language (currently Haskell), including higher-order functions, type definition, algebraic data types, modules, parsing, I/O, and monads. Basic data structures, including lists, binary search trees, and tree balancing. Basic mathematics for reasoning about programs, including induction, inductive definition, propositional logic, and proofs. Search in graphs, including depth-first and breadth-first search. Search in metric graphs, including greedy and A* search, with applications", 
+       "title": "Honors Introduction to Computer Science I", 
+       "notes": null, 
+       "credit": "100", 
+       "prereq_json": {
+        "num": 2, 
+        "list": [
+         {
+          "num": 1, 
+          "list": [
+           "Plac 15100"
+          ]
+         }, 
+         {
+          "num": 1, 
+          "list": [
+           " consent of departmental counselor"
+          ]
+         }
+        ]
+       }, 
+       "terms_offered": "Autumn", 
+       "prereq_text": "Placement into MATH 15100 or equivalent and programming experience, or consent of departmental counselor"
+      }
+     ], 
+     "title": null
+    }, 
+    {
+     "num": 1, 
+     "list": [
+      {
+       "description": "", 
+       "title": "Introduction to Computer Science II", 
+       "notes": "This course meets the general education requirement in the mathematical sciences.", 
+       "credit": "100", 
+       "prereq_json": {
+        "num": 1, 
+        "list": [
+         {
+          "num": 1, 
+          "list": [
+           "Plac 15100", 
+           " consent of departmental counselor"
+          ]
+         }
+        ]
+       }, 
+       "terms_offered": "Winter, Summer", 
+       "prereq_text": "Placement into MATH 15100 or equivalent, or consent of departmental counselor"
+      }, 
+      {
+       "description": "This course emphasizes the C Programming Language, but not in isolation. Instead, C is developed as a part of a larger programming toolkit that includes the shell (specifically ksh), shell programming, and standard Unix utilities (including awk). Nonshell scripting languages, in particular perl and python, are introduced, as well as interpreter (#!) files that use the command-line version of DrScheme. We cover various standard data structures, both abstractly, and in terms of concrete implementations\u2014primarily in C, but also from time to time in other contexts like scheme and ksh. The course uses a team programming approach. There is a mixture of individual programming assignments that focus on current lecture material, together with team programming assignments that can be tackled using any Unix technology. Team projects are assessed based on correctness, elegance, and quality of documentation. We teach the \"Unix way\" of breaking a complex computational problem into smaller pieces, most or all of which can be solved using pre-existing, well-debugged, and documented components, and then composed in a variety of ways", 
+       "title": "Honors Introduction to Computer Science II", 
+       "notes": "Students who have taken CMSC 15100 may take 16200 with consent of instructor.", 
+       "credit": "100", 
+       "prereq_json": {
+        "num": 2, 
+        "list": [
+         {
+          "num": 1, 
+          "list": [
+           "CMSC 16100"
+          ]
+         }, 
+         {
+          "num": 1, 
+          "list": [
+           " consent of departmental counselor"
+          ]
+         }
+        ]
+       }, 
+       "terms_offered": "Winter", 
+       "prereq_text": "CMSC 16100 or equivalent and programming experience, or consent of departmental counselor"
+      }
+     ], 
+     "title": null
+    }, 
+    {
+     "description": "This course covers the basics of computer systems from a programmer's perspective. Topics include data representation, machine language programming, exceptions, code optimization, performance measurement, memory systems, and system-level I/O. Extensive programming required", 
+     "title": "Introduction to Computer Systems", 
+     "notes": "Required of students who are majoring in Computer Science.", 
+     "credit": "100", 
+     "prereq_json": {
+      "num": 1, 
+      "list": [
+       {
+        "num": 1, 
+        "list": [
+         "CMSC 15200", 
+         "CMSC 12200"
+        ]
+       }
+      ]
+     }, 
+     "terms_offered": "Spring", 
+     "prereq_text": "CMSC 15200 or 12200"
+    }, 
+    {
+     "description": "This course is concerned with the mathematical foundations of computer software. We introduce a number of mathematical areas used in the modeling of programming languages and software, including prepositional and predicate logic, basic set theory, relations, and automata theory. The connection between mathematics and software is made via examples and small programming assignments", 
+     "title": "Foundations of Software", 
+     "notes": "Required of students who are majoring in Computer Science.  Students who have credit for MATH 13300 or higher should see the Department Counselor for prior approval to substitute CMSC 28000 or 27700.", 
+     "credit": "100", 
+     "prereq_json": {
+      "num": 1, 
+      "list": [
+       {
+        "num": 1, 
+        "list": [
+         "CMSC 15200", 
+         "CMSC 12200"
+        ]
+       }
+      ]
+     }, 
+     "terms_offered": "Autumn", 
+     "prereq_text": "CMSC 15200 or 12200"
+    }
+   ], 
+   "title": "Intro"
+  }, 
+  {
+   "num": 2, 
+   "list": [
+    {
+     "description": "Programming language design aims at the closest possible correspondence between the structures of a program and the task it performs. This course studies some of the structural concepts affecting programming languages: iterative and recursive control flow, data types and type checking, procedural versus functional programming, modularity and encapsulation, fundamentals of interpreting and compiling, and formal descriptions of syntax and semantics. Students write short programs in radically different languages to illuminate the variety of possible designs", 
+     "title": "Programming Languages", 
+     "notes": null, 
+     "credit": "100", 
+     "prereq_json": {
+      "num": 1, 
+      "list": [
+       {
+        "num": 1, 
+        "list": [
+         "CMSC 15300"
+        ]
+       }
+      ]
+     }, 
+     "terms_offered": "Autumn", 
+     "prereq_text": "CMSC 15300"
+    }, 
+    {
+     "description": "This course is a survey of contemporary computer organization covering CPU design, instruction sets, control, processors, busses, ALU, memory, pipelined computers, multiprocessors, networking, and case studies. We focus on the techniques of quantitative analysis and evaluation of modern computing systems, such as the selection of appropriate benchmarks to reveal and compare the performance of alternative design choices in system design. We emphasize major component subsystems of high-performance computers: pipelining, instruction-level parallelism, memory hierarchies, input/output, and network-oriented interconnections", 
+     "title": "Computer Architecture", 
+     "notes": null, 
+     "credit": "100", 
+     "prereq_json": {
+      "num": 1, 
+      "list": [
+       {
+        "num": 1, 
+        "list": [
+         "CMSC 15400"
+        ]
+       }
+      ]
+     }, 
+     "terms_offered": "Autumn", 
+     "prereq_text": "CMSC 15400"
+    }, 
+    {
+     "description": "This course presents the functional programming paradigm, based on the idea of functions as &quot;first-class&quot; values that can be manipulated like other data. This idea leads to great power of expression while maintaining simplicity, making it easier to write correct and maintainable software. We use the languages Haskell and ML as representatives of the two main schools of functional programming, the pure and the impure. After learning the basic elements of these languages, we explore functional programming techniques that can be exploited in many areas of application using a surprising variety of languages (e.g., C#, Python) that have included first-class functions as a feature. We compare functional and object oriented programming and include an brief overview of concurrent functional programming in ML and Haskell", 
+     "title": "Functional Programming", 
+     "notes": null, 
+     "credit": "100", 
+     "prereq_json": {
+      "num": 1, 
+      "list": [
+       {
+        "num": 1, 
+        "list": [
+         "CMSC 15300"
+        ]
+       }
+      ]
+     }, 
+     "terms_offered": "Not offered 2011\u201312", 
+     "prereq_text": "CMSC 15300"
+    }, 
+    {
+     "description": "This course covers principles and techniques for implementing computer languages (e.g., programming languages, query languages, specification languages, domain-specific languages). Topics include lexical analysis, parsing, tree representations of programs (both parse trees and abstract syntax trees), types and type checking, interpreters, abstract machines, and run-time systems. This is a project-based course involving the implementation of a small language using Standard ML", 
+     "title": "Implementation of Computer Languages I", 
+     "notes": "Prior experience with ML programming not required. This course is offered in alternate years.", 
+     "credit": "100", 
+     "prereq_json": {
+      "num": 3, 
+      "list": [
+       {
+        "num": 1, 
+        "list": [
+         "CMSC 15300"
+        ]
+       }, 
+       {
+        "num": 1, 
+        "list": [
+         "1540 15400"
+        ]
+       }, 
+       {
+        "num": 1, 
+        "list": [
+         "CMSC 22100"
+        ]
+       }
+      ]
+     }, 
+     "terms_offered": "Winter", 
+     "prereq_text": "CMSC 15300 and 15400 required; CMSC 22100 recommended"
+    }, 
+    {
+     "description": "This course provides an introduction to the basic concepts and techniques used to implement operating systems. Topics include processes and threads, interprocess communication and synchronization, memory management, segmentation, paging, linking and loading, scheduling, file systems, and input/output. The course will revolve around the implementation of an x86 operating system kernel", 
+     "title": "Operating Systems", 
+     "notes": "This course is offered in altenate years.", 
+     "credit": "100", 
+     "prereq_json": {
+      "num": 2, 
+      "list": [
+       {
+        "num": 1, 
+        "list": [
+         "CMSC 15400"
+        ]
+       }, 
+       {
+        "num": 1, 
+        "list": [
+         "one  22200", 
+         "CMSC 22610", 
+         "CMSC 23300", 
+         "CMSC 23500", 
+         "CMSC 23700", 
+         "CMSC 23800"
+        ]
+       }
+      ]
+     }, 
+     "terms_offered": "Winter", 
+     "prereq_text": "CMSC 15400, and one of the following: CMSC 22200, CMSC 22610, CMSC 23300, CMSC 23500, CMSC 23700, or CMSC 23800"
+    }, 
+    {
+     "description": "This course focuses on the principles and techniques used in the development of networked and distributed software. Topics include programming with sockets;   concurrent programming; data link layer (Ethernet, packet switching, etc.); internet and routing protocols (UDP, TCP); and other commonly used network protocols and techniques. This is a project-oriented course in which students are required to develop software in C on a UNIX environment", 
+     "title": "Networks and Distributed Systems", 
+     "notes": null, 
+     "credit": "100", 
+     "prereq_json": {
+      "num": 1, 
+      "list": [
+       {
+        "num": 1, 
+        "list": [
+         "CMSC 15400"
+        ]
+       }
+      ]
+     }, 
+     "terms_offered": "Winter", 
+     "prereq_text": "CMSC 15400"
+    }, 
+    {
+     "description": "This course is an introduction to database design and programming using the relational model. Topics include DBMS architecture, entity-relationship and relational models, relational algebra, relational calculus, functional dependencies and normal forms, web DBs and PHP, query optimization, and physical data organization. The lab section guides students through the collaborative implementation of a relational database management system, allowing students to see topics such as physical data organization and DBMS architecture in practice, and exercise general skills such as collaborative software development", 
+     "title": "Introduction to Database Systems", 
+     "notes": null, 
+     "credit": "100", 
+     "prereq_json": {
+      "num": 2, 
+      "list": [
+       {
+        "num": 1, 
+        "list": [
+         "CMSC 15300"
+        ]
+       }, 
+       {
+        "num": 1, 
+        "list": [
+         "1540 15400"
+        ]
+       }
+      ]
+     }, 
+     "terms_offered": "Spring", 
+     "prereq_text": "CMSC 15300 and 15400"
+    }, 
+    {
+     "description": "This course introduces the basic concepts and techniques used in three-dimensional computer graphics. The focus is on real-time rendering techniques, such as those found in computer games. These include coordinate systems and transformations, the graphics pipeline, basic geometric algorithms, texture mapping, level-of detail optimizations, and shadows. Students are required to complete both written assignments and programming projects using OpenGL", 
+     "title": "Introduction to Computer Graphics", 
+     "notes": null, 
+     "credit": "100", 
+     "prereq_json": {
+      "num": 1, 
+      "list": [
+       {
+        "num": 1, 
+        "list": [
+         "CMSC 15400"
+        ]
+       }
+      ]
+     }, 
+     "terms_offered": "Winter", 
+     "prereq_text": "CMSC 15400"
+    }, 
+    {
+     "description": "Computer games are one of the most exciting applications of computer technology. They also are large software systems that embody cutting-edge graphics, as well as techniques from AI, scientific simulation, networking, and databases. This course introduces the student to the basic algorithms and techniques used in computer-game construction. Students work in teams to design and create games using existing libraries for graphics, physics simulation, and so forth", 
+     "title": "Game Construction", 
+     "notes": null, 
+     "credit": "100", 
+     "prereq_json": {
+      "num": 3, 
+      "list": [
+       {
+        "num": 1, 
+        "list": [
+         "CMSC 15400"
+        ]
+       }, 
+       {
+        "num": 1, 
+        "list": [
+         "at l 23700", 
+         "CMSC 25000", 
+         "CMSC 23000", 
+         "CMSC 23300", 
+         "CMSC 23500"
+        ]
+       }, 
+       {
+        "num": 1, 
+        "list": []
+       }
+      ]
+     }, 
+     "terms_offered": "Spring. Not offered 2011\u201312.", 
+     "prereq_text": "CMSC 15400, and at least two of the following courses: CMSC 23700, CMSC 25000, CMSC 23000, CMSC 23300, CMSC 23500. Strong background in programming and expertise in at least two technical areas underlying computer games (e.g., AI, graphics, scientific computing, networking)."
+    }
+   ], 
+   "title": "Programming Languages and Systems"
+  }, 
+  {
+   "num": 3, 
+   "list": [
+    {
+     "description": "This course emphasizes mathematical discovery and rigorous proof, which are illustrated on a refreshing variety of accessible and useful topics. Basic counting is a recurring theme and provides the most important source for sequences, which is another recurring theme. Further topics include proof by induction; recurrences and Fibonacci numbers; graph theory and trees; number theory, congruences, and Fermat's little theorem; counting, factorials, and binomial coefficients; combinatorial probability; random variables, expected value, and variance; and limits of sequences, asymtotic equality, and rates of growth", 
+     "title": "Discrete Mathematics", 
+     "notes": "This is a directed course in mathematical topics and techniques that is a prerequisite for courses such as CMSC 2720 and 27400.", 
+     "credit": "100", 
+     "prereq_json": {
+      "num": 1, 
+      "list": [
+       {
+        "num": 1, 
+        "list": [
+         "CMSC 15300", 
+         "plac 15100"
+        ]
+       }
+      ]
+     }, 
+     "terms_offered": "Autumn", 
+     "prereq_text": "CMSC 15300, or placement into MATH 15100 or equivalent"
+    }, 
+    {
+     "description": "This course covers design and analysis of efficient algorithms, with emphasis on ideas rather than on implementation. Algorithmic questions include sorting and searching, discrete optimization, algorithmic graph theory, algorithmic number theory, and cryptography. Design techniques include &quot;divide-and-conquer&quot; methods, dynamic programming, greedy algorithms, and graph search, as well as the design of efficient data structures. Methods of algorithm analysis include asymptotic notation, evaluation of recurrent inequalities, the concepts of polynomial-time algorithms, and NP-completeness", 
+     "title": "Theory of Algorithms", 
+     "notes": null, 
+     "credit": "100", 
+     "prereq_json": {
+      "num": 1, 
+      "list": [
+       {
+        "num": 1, 
+        "list": [
+         "CMSC 27100", 
+         " consent of instructor"
+        ]
+       }
+      ]
+     }, 
+     "terms_offered": "Winter", 
+     "prereq_text": "CMSC 27100 or consent of instructor"
+    }, 
+    {
+     "num": 1, 
+     "list": [
+      {
+       "description": "This course is a basic introduction to computability theory and formal languages. Topics include automata theory, regular languages, context-free languages, and Turing machines", 
+       "title": "Introduction to Formal Languages", 
+       "notes": null, 
+       "credit": "100", 
+       "prereq_json": {
+        "num": 1, 
+        "list": [
+         {
+          "num": 1, 
+          "list": [
+           "CMSC 15300", 
+           "MATH 19900", 
+           "CMSC 25500"
+          ]
+         }
+        ]
+       }, 
+       "terms_offered": "Autumn", 
+       "prereq_text": "CMSC 15300, or MATH 19900 or 25500"
+      }, 
+      {
+       "description": "Computability topics are discussed (e.g., the s-m-n theorem and the recursion theorem, resource-bounded computation). This course introduces complexity theory. Relationships between space and time, determinism and non-determinism, NP-completeness, and the P versus NP question are investigated", 
+       "title": "Introduction to Complexity Theory", 
+       "notes": null, 
+       "credit": "100", 
+       "prereq_json": {
+        "num": 3, 
+        "list": [
+         {
+          "num": 1, 
+          "list": [
+           "CMSC 27100", 
+           "MATH 19900", 
+           "CMSC 25500"
+          ]
+         }, 
+         {
+          "num": 1, 
+          "list": []
+         }, 
+         {
+          "num": 1, 
+          "list": []
+         }
+        ]
+       }, 
+       "terms_offered": "Spring", 
+       "prereq_text": "CMSC 27100, or MATH 19900 or 25500; and experience with mathematical proofs"
+      }
+     ], 
+     "title": null
+    }
+   ], 
+   "title": "Algorithms"
+  }, 
+  {
+   "num": 1, 
+   "list": [
+    {
+     "num": 2, 
+     "list": [
+      {
+       "description": "This course explores advanced topics in distributed systems. Topics include supercomputing (architectures, applications, programming models, etc.); grid computing with an emphasis on Globus technologies; Infrastructure-as-a-Service clouds (virtual infrastructure management, Amazon EC2, etc.), Platform-as-a-Service clouds (Google App Engine, etc.), and the Software-as-a-Service model; and other current topics related to using and building distributed systems. The course includes a substantial practical component but also requires students to read papers and articles on current advances in the field", 
+       "title": "Advanced Distributed Systems", 
+       "notes": null, 
+       "credit": "100", 
+       "prereq_json": {
+        "num": 1, 
+        "list": [
+         {
+          "num": 1, 
+          "list": [
+           "CMSC 23300", 
+           " consent of instructor"
+          ]
+         }
+        ]
+       }, 
+       "terms_offered": "Spring", 
+       "prereq_text": "CMSC 23300 or consent of instructor"
+      }, 
+      {
+       "description": "This course introduces the theoretical, technical, and philosophical issues of AI. The emphasis is on computational and mathematical modes of inquiry into the structure and function of intelligent systems. Topics include learning and inference, speech and language, vision and robotics, search and reasoning", 
+       "title": "Artificial Intelligence", 
+       "notes": null, 
+       "credit": "100", 
+       "prereq_json": {
+        "num": 1, 
+        "list": [
+         {
+          "num": 1, 
+          "list": [
+           "CMSC 15300"
+          ]
+         }
+        ]
+       }, 
+       "terms_offered": "Winter", 
+       "prereq_text": "CMSC 15300"
+      }, 
+      {
+       "description": "This course introduces the problems of computational linguistics and the techniques used to deal with them. Topics are drawn primarily from phonology, morphology, and syntax. Special topics include automatic learning of grammatical structure and the treatment of languages other than English", 
+       "title": "Computational Linguistics", 
+       "notes": null, 
+       "credit": "100", 
+       "prereq_json": {
+        "num": 1, 
+        "list": [
+         {
+          "num": 1, 
+          "list": [
+           "CMSC 15200", 
+           "CMSC 12200"
+          ]
+         }
+        ]
+       }, 
+       "terms_offered": "Autumn", 
+       "prereq_text": "CMSC 15200 or 12200, or competence in a programming language"
+      }, 
+      {
+       "description": "", 
+       "title": "Computational Models of Speech", 
+       "notes": null, 
+       "credit": "100", 
+       "prereq_json": null, 
+       "terms_offered": "Not offered in 2011/12", 
+       "prereq_text": null
+      }, 
+      {
+       "description": "This course covers the fundamentals of digital image formation; image processing, detection and analysis of visual features; representation shape and recovery of 3D information from images and video; analysis of motion. We also study some prominent applications of modern computer vision such as face recognition and object and scene classification. Our emphasis is on basic principles, mathematical models, and efficient algorithms established in modern computer vision", 
+       "title": "Introduction to Computer Vision", 
+       "notes": "This course is offered in alternate years.", 
+       "credit": "100", 
+       "prereq_json": {
+        "num": 1, 
+        "list": [
+         {
+          "num": 1, 
+          "list": [
+           "CMSC 25010"
+          ]
+         }
+        ]
+       }, 
+       "terms_offered": "Spring", 
+       "prereq_text": "CMSC 25010"
+      }, 
+      {
+       "description": "This course covers methods and models for computer vision. Topics include segmentation and feature detection", 
+       "title": "Computer Vision", 
+       "notes": null, 
+       "credit": "100", 
+       "prereq_json": {
+        "num": 1, 
+        "list": [
+         {
+          "num": 1, 
+          "list": [
+           "CMSC 25010"
+          ]
+         }
+        ]
+       }, 
+       "terms_offered": "Winter. Not offered 2011-12.", 
+       "prereq_text": "CMSC 25010"
+      }, 
+      {
+       "description": "This course serves as a general introduction to the basic algorithms used to understand current problems in biology. Topics may include sequence alignment algorithms to study DNA and protein sequences, algorithms and experiments for protein structure prediction, dynamics, and folding, clustering and machine learning methods for gene expression analysis, computational models of RNA structure, and DNA computing and self-assembly", 
+       "title": "Computational Biology", 
+       "notes": "This course is offered in alternate years.", 
+       "credit": "100", 
+       "prereq_json": {
+        "num": 1, 
+        "list": [
+         {
+          "num": 1, 
+          "list": [
+           "Familiarity with basic discrete mathematics/statistics/algorithms and biology recommended but not required."
+          ]
+         }
+        ]
+       }, 
+       "terms_offered": "Winter", 
+       "prereq_text": "Familiarity with basic discrete mathematics/statistics/algorithms and biology recommended but not required."
+      }
+     ], 
+     "title": null
+    }, 
+    {
+     "num": 2, 
+     "list": [
+      {
+       "description": "Programming language design aims at the closest possible correspondence between the structures of a program and the task it performs. This course studies some of the structural concepts affecting programming languages: iterative and recursive control flow, data types and type checking, procedural versus functional programming, modularity and encapsulation, fundamentals of interpreting and compiling, and formal descriptions of syntax and semantics. Students write short programs in radically different languages to illuminate the variety of possible designs", 
+       "title": "Programming Languages", 
+       "notes": null, 
+       "credit": "100", 
+       "prereq_json": {
+        "num": 1, 
+        "list": [
+         {
+          "num": 1, 
+          "list": [
+           "CMSC 15300"
+          ]
+         }
+        ]
+       }, 
+       "terms_offered": "Autumn", 
+       "prereq_text": "CMSC 15300"
+      }, 
+      {
+       "description": "This course is a survey of contemporary computer organization covering CPU design, instruction sets, control, processors, busses, ALU, memory, pipelined computers, multiprocessors, networking, and case studies. We focus on the techniques of quantitative analysis and evaluation of modern computing systems, such as the selection of appropriate benchmarks to reveal and compare the performance of alternative design choices in system design. We emphasize major component subsystems of high-performance computers: pipelining, instruction-level parallelism, memory hierarchies, input/output, and network-oriented interconnections", 
+       "title": "Computer Architecture", 
+       "notes": null, 
+       "credit": "100", 
+       "prereq_json": {
+        "num": 1, 
+        "list": [
+         {
+          "num": 1, 
+          "list": [
+           "CMSC 15400"
+          ]
+         }
+        ]
+       }, 
+       "terms_offered": "Autumn", 
+       "prereq_text": "CMSC 15400"
+      }, 
+      {
+       "description": "This course presents the functional programming paradigm, based on the idea of functions as &quot;first-class&quot; values that can be manipulated like other data. This idea leads to great power of expression while maintaining simplicity, making it easier to write correct and maintainable software. We use the languages Haskell and ML as representatives of the two main schools of functional programming, the pure and the impure. After learning the basic elements of these languages, we explore functional programming techniques that can be exploited in many areas of application using a surprising variety of languages (e.g., C#, Python) that have included first-class functions as a feature. We compare functional and object oriented programming and include an brief overview of concurrent functional programming in ML and Haskell", 
+       "title": "Functional Programming", 
+       "notes": null, 
+       "credit": "100", 
+       "prereq_json": {
+        "num": 1, 
+        "list": [
+         {
+          "num": 1, 
+          "list": [
+           "CMSC 15300"
+          ]
+         }
+        ]
+       }, 
+       "terms_offered": "Not offered 2011\u201312", 
+       "prereq_text": "CMSC 15300"
+      }, 
+      {
+       "description": "This course covers principles and techniques for implementing computer languages (e.g., programming languages, query languages, specification languages, domain-specific languages). Topics include lexical analysis, parsing, tree representations of programs (both parse trees and abstract syntax trees), types and type checking, interpreters, abstract machines, and run-time systems. This is a project-based course involving the implementation of a small language using Standard ML", 
+       "title": "Implementation of Computer Languages I", 
+       "notes": "Prior experience with ML programming not required. This course is offered in alternate years.", 
+       "credit": "100", 
+       "prereq_json": {
+        "num": 3, 
+        "list": [
+         {
+          "num": 1, 
+          "list": [
+           "CMSC 15300"
+          ]
+         }, 
+         {
+          "num": 1, 
+          "list": [
+           "1540 15400"
+          ]
+         }, 
+         {
+          "num": 1, 
+          "list": [
+           "CMSC 22100"
+          ]
+         }
+        ]
+       }, 
+       "terms_offered": "Winter", 
+       "prereq_text": "CMSC 15300 and 15400 required; CMSC 22100 recommended"
+      }, 
+      {
+       "description": "This course is a continuation of CMSC 22610, covering compilers for general-purpose languages. Topics include compiler-immediate representations, continuation-passing style, runtime representations, code generation, code optimization, register allocation, instruction scheduling, and garbage collection. This is a project-based course in which students construct a complete, working compiler for a small language using Standard ML", 
+       "title": "Implementation of Computer Languages II", 
+       "notes": "This course is offered in alternate years.", 
+       "credit": "100", 
+       "prereq_json": {
+        "num": 2, 
+        "list": [
+         {
+          "num": 1, 
+          "list": [
+           "CMSC 22610"
+          ]
+         }, 
+         {
+          "num": 1, 
+          "list": [
+           "CMSC 22100"
+          ]
+         }
+        ]
+       }, 
+       "terms_offered": "Spring", 
+       "prereq_text": "CMSC 22610 required; CMSC 22100 strongly recommended"
+      }, 
+      {
+       "description": "This course provides an introduction to the basic concepts and techniques used to implement operating systems. Topics include processes and threads, interprocess communication and synchronization, memory management, segmentation, paging, linking and loading, scheduling, file systems, and input/output. The course will revolve around the implementation of an x86 operating system kernel", 
+       "title": "Operating Systems", 
+       "notes": "This course is offered in altenate years.", 
+       "credit": "100", 
+       "prereq_json": {
+        "num": 2, 
+        "list": [
+         {
+          "num": 1, 
+          "list": [
+           "CMSC 15400"
+          ]
+         }, 
+         {
+          "num": 1, 
+          "list": [
+           "one  22200", 
+           "CMSC 22610", 
+           "CMSC 23300", 
+           "CMSC 23500", 
+           "CMSC 23700", 
+           "CMSC 23800"
+          ]
+         }
+        ]
+       }, 
+       "terms_offered": "Winter", 
+       "prereq_text": "CMSC 15400, and one of the following: CMSC 22200, CMSC 22610, CMSC 23300, CMSC 23500, CMSC 23700, or CMSC 23800"
+      }, 
+      {
+       "description": "This course focuses on the principles and techniques used in the development of networked and distributed software. Topics include programming with sockets;   concurrent programming; data link layer (Ethernet, packet switching, etc.); internet and routing protocols (UDP, TCP); and other commonly used network protocols and techniques. This is a project-oriented course in which students are required to develop software in C on a UNIX environment", 
+       "title": "Networks and Distributed Systems", 
+       "notes": null, 
+       "credit": "100", 
+       "prereq_json": {
+        "num": 1, 
+        "list": [
+         {
+          "num": 1, 
+          "list": [
+           "CMSC 15400"
+          ]
+         }
+        ]
+       }, 
+       "terms_offered": "Winter", 
+       "prereq_text": "CMSC 15400"
+      }, 
+      {
+       "description": "This course is an introduction to database design and programming using the relational model. Topics include DBMS architecture, entity-relationship and relational models, relational algebra, relational calculus, functional dependencies and normal forms, web DBs and PHP, query optimization, and physical data organization. The lab section guides students through the collaborative implementation of a relational database management system, allowing students to see topics such as physical data organization and DBMS architecture in practice, and exercise general skills such as collaborative software development", 
+       "title": "Introduction to Database Systems", 
+       "notes": null, 
+       "credit": "100", 
+       "prereq_json": {
+        "num": 2, 
+        "list": [
+         {
+          "num": 1, 
+          "list": [
+           "CMSC 15300"
+          ]
+         }, 
+         {
+          "num": 1, 
+          "list": [
+           "1540 15400"
+          ]
+         }
+        ]
+       }, 
+       "terms_offered": "Spring", 
+       "prereq_text": "CMSC 15300 and 15400"
+      }, 
+      {
+       "description": "This course introduces the basic concepts and techniques used in three-dimensional computer graphics. The focus is on real-time rendering techniques, such as those found in computer games. These include coordinate systems and transformations, the graphics pipeline, basic geometric algorithms, texture mapping, level-of detail optimizations, and shadows. Students are required to complete both written assignments and programming projects using OpenGL", 
+       "title": "Introduction to Computer Graphics", 
+       "notes": null, 
+       "credit": "100", 
+       "prereq_json": {
+        "num": 1, 
+        "list": [
+         {
+          "num": 1, 
+          "list": [
+           "CMSC 15400"
+          ]
+         }
+        ]
+       }, 
+       "terms_offered": "Winter", 
+       "prereq_text": "CMSC 15400"
+      }, 
+      {
+       "description": "Computer games are one of the most exciting applications of computer technology. They also are large software systems that embody cutting-edge graphics, as well as techniques from AI, scientific simulation, networking, and databases. This course introduces the student to the basic algorithms and techniques used in computer-game construction. Students work in teams to design and create games using existing libraries for graphics, physics simulation, and so forth", 
+       "title": "Game Construction", 
+       "notes": null, 
+       "credit": "100", 
+       "prereq_json": {
+        "num": 3, 
+        "list": [
+         {
+          "num": 1, 
+          "list": [
+           "CMSC 15400"
+          ]
+         }, 
+         {
+          "num": 1, 
+          "list": [
+           "at l 23700", 
+           "CMSC 25000", 
+           "CMSC 23000", 
+           "CMSC 23300", 
+           "CMSC 23500"
+          ]
+         }, 
+         {
+          "num": 1, 
+          "list": []
+         }
+        ]
+       }, 
+       "terms_offered": "Spring. Not offered 2011\u201312.", 
+       "prereq_text": "CMSC 15400, and at least two of the following courses: CMSC 23700, CMSC 25000, CMSC 23000, CMSC 23300, CMSC 23500. Strong background in programming and expertise in at least two technical areas underlying computer games (e.g., AI, graphics, scientific computing, networking)."
+      }
+     ], 
+     "title": null
+    }, 
+    {
+     "num": 2, 
+     "list": [
+      {
+       "description": "Scientific visualization combines the image synthesis methods of computer graphics, numerical methods of scientific computing, and mathematical models of the physical world to create a visual framework for discovering, understanding, and solving scientific problems. This course describes the context, methods, and application of modern scientific visualization, giving students the skills required to evaluate, design, and create effective visualizations. This course, which uses mainly Python software and packages that have convenient Python interfaces, is also intended for nonmajors with scientific data visualization needs", 
+       "title": "Scientific Visualization", 
+       "notes": "This course is offered in alternate years.", 
+       "credit": "100", 
+       "prereq_json": {
+        "num": 1, 
+        "list": [
+         {
+          "num": 1, 
+          "list": [
+           "Strong programming skills and basic knowledge of linear algebra and calculus"
+          ]
+         }
+        ]
+       }, 
+       "terms_offered": "Autumn", 
+       "prereq_text": "Strong programming skills and basic knowledge of linear algebra and calculus"
+      }, 
+      {
+       "description": "Explores the digital nature of biology at the molecular scale. Focuses on the role of hydrophobic effect in protein/ligand associations. Utilizes data-mining as a tool both to understand basic biophysics and to explain protein-ligand associations. Shows how such analog interactions can lead to digital devices (e.g., switches). No biochemistry background will be assumed", 
+       "title": "Digital Biology", 
+       "notes": "High school chemistry is helpful.", 
+       "credit": "100", 
+       "prereq_json": {
+        "num": 2, 
+        "list": [
+         {
+          "num": 1, 
+          "list": [
+           null
+          ]
+         }, 
+         {
+          "num": 1, 
+          "list": []
+         }
+        ]
+       }, 
+       "terms_offered": "Winter", 
+       "prereq_text": "MATH 15100-15200 and ability to program. All prerequisites will be provided in class."
+      }, 
+      {
+       "description": "Basic processes of numerical computation are examined from both an experimental and theoretical point of view. This course deals with numerical linear algebra, approximation of functions, approximate integration and differentiation, Fourier transformation, solution of nonlinear equations, and the approximate solution of initial value problems for ordinary differential equations. We concentrate on a few widely used methods in each area covered", 
+       "title": "Introduction to Scientific Computing", 
+       "notes": "This course is offered in alternate years.", 
+       "credit": "100", 
+       "prereq_json": {
+        "num": 3, 
+        "list": [
+         {
+          "num": 1, 
+          "list": [
+           "A ye 15300", 
+           "A ye 19620"
+          ]
+         }, 
+         {
+          "num": 1, 
+          "list": [
+           "CMSC 10600"
+          ]
+         }, 
+         {
+          "num": 1, 
+          "list": [
+           " consent of instructor"
+          ]
+         }
+        ]
+       }, 
+       "terms_offered": "Autumn", 
+       "prereq_text": "A year of calculus (MATH 15300 or higher), a quarter of linear algebra (MATH 19620 or higher), and CMSC 10600 or higher; or consent of instructor"
+      }
+     ], 
+     "title": null
+    }
+   ], 
+   "title": "Other Sequences"
+  }
+ ], 
+ "title": "Computer Science"
+}

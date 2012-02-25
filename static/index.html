@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Interactive Scheduler</title>
+    <script src="/static/js/lib/jquery-ui/js/jquery-1.7.1.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/static/js/lib/underscore.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/static/js/lib/backbone.js" type="text/javascript" charset="utf-8"></script>
+    <script src="static/js/interactivescheduler.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>
+    <h1>Interactive Scheduler</h1>
+    <hr/>
+    <table width="100%" height="100%" id="scheduler-app">
+      <tr>
+        <td id="schedule-viz-container"></td>
+        <td id="major-panel-container"></td>
+      </tr>
+    </table>
+    <!-- Templates -->
+    <script type="text/template" id="schedule-template">
+      <table id="schedule-viz-table" width="100%" height="100%" border="1">
+        <% _.each(_.range(4), function(year) { %>
+          <tr class="schedule-year">
+            <% _.each(_.range(3), function(quarter) { %>
+              <td class="schedule-quarter" id="<%= 'quarter-' + year + '-' + quarter %>">
+              </td>
+            <% }) %>
+          </tr>
+        <% }) %>
+      </table>
+    </script>
+    <script type="text/template" id="quarter-template">
+      <ul class="quarter-course-list">
+        <% _.each(courses, function(course) { %>
+          <li class="course-in-quarter"><%- course.title %></li>
+        <% }) %>
+      </ul>
+    </script>
+    <script type="text/template" id="bin-template">
+      <span class="bin-stats"></span>
+      <ul class="bin-items">
+      </ul>
+    </script>
+  </body>
+</html>

@@ -1,6 +1,7 @@
 {
-  "name": "Computer Science",
-  "requirements": [
+  "title": "Computer Science",
+  "num": 4,
+  "list": [
     {
       "title": "Intro",
       "num": 4,
@@ -15,8 +16,8 @@
         {
           "num": 1,
           "list": [
-            "CMSC 15100",
-            "CMSC 16100"
+            "CMSC 15200",
+            "CMSC 16200"
           ]
         },
         "CMSC 15400", 
