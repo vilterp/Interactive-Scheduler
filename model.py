@@ -26,6 +26,7 @@ class Course(SQLObject):
   def get_dict(self):
     # shouldn't have to write this code...
     return {
+      'id': self.id,
       'title': self.title,
       'description': self.description,
       'notes': self.notes,

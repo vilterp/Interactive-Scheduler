@@ -9,3 +9,15 @@ div.bin.fulfilled {
 div.bin.not-fulfilled {
   background-color: pink;
 }
+
+.course-in-bin {
+  cursor: move;
+}
+
+td.schedule-quarter.will-accept {
+  background-color: lightgreen;
+}
+
+td.schedule-quarter.hover {
+  background-color: green;
+}

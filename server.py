@@ -15,16 +15,7 @@ def search(query):
     LIKE(Course.q.title, "%%%s%%" % query),
     LIKE(Course.q.description, "%%%s%%" % query)
   )))
-  def make_dict(c):
-    return {
-       'title': c.title,
-       'description': c.description,
-       'prereqs': c.get_prereqs(),
-       'prereq_text': c.prereq_text,
-       'notes': c.notes,
-       'terms_offered': c.terms_offered
-     }
-  return jsonify(data=map(make_dict, results))
+  return jsonify(data=map(lambda x: x.get_dict(), results))
 
 if __name__ == '__main__':
   app.debug = True

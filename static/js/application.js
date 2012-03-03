@@ -3,8 +3,55 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   jQuery(function() {
-    var AppView, Bin, BinView, Completable, CompletablesList, Course, CourseList, CourseView, Quarter, QuarterList, QuarterView, Schedule, ScheduleView, grad_year, quarter, schedule, schedule_view, season, seasons, start_year, view, year, years, _i, _ref, _results,
+    var Bin, BinView, Completable, CompletablesList, Course, CourseList, CourseView, MajorView, Objective, ObjectivesList, ObjectivesListView, Quarter, QuarterList, QuarterView, Schedule, SchedulePlan, SchedulePlanView, ScheduleView, objectives_list, schedule,
       _this = this;
+    SchedulePlan = (function(_super) {
+
+      __extends(SchedulePlan, _super);
+
+      function SchedulePlan() {
+        SchedulePlan.__super__.constructor.apply(this, arguments);
+      }
+
+      SchedulePlan.prototype.save_to_local_storage = function() {
+        throw "not implemented";
+      };
+
+      SchedulePlan.load_from_local_storage = function() {
+        throw "not implemented";
+      };
+
+      return SchedulePlan;
+
+    })(Backbone.Model);
+    ObjectivesList = (function(_super) {
+
+      __extends(ObjectivesList, _super);
+
+      function ObjectivesList() {
+        ObjectivesList.__super__.constructor.apply(this, arguments);
+      }
+
+      return ObjectivesList;
+
+    })(Backbone.Collection);
+    Objective = (function(_super) {
+
+      __extends(Objective, _super);
+
+      function Objective() {
+        Objective.__super__.constructor.apply(this, arguments);
+      }
+
+      Objective.TYPE_CORE = 0;
+
+      Objective.TYPE_MAJOR = 1;
+
+      Objective.TYPE_MINOR = 2;
+
+      return Objective;
+
+    })(Backbone.Model);
     Completable = (function(_super) {
 
       __extends(Completable, _super);
@@ -12,6 +59,14 @@
       function Completable() {
         Completable.__super__.constructor.apply(this, arguments);
       }
+
+      Completable.prototype.initialize = function() {
+        return this.set('valid', this.is_valid());
+      };
+
+      Completable.prototype.check_valid = function() {
+        return this.set('valid', this.is_valid());
+      };
 
       return Completable;
 
@@ -29,14 +84,14 @@
         this.set('sub_completables', new CompletablesList(sub_completables));
       }
 
-      Bin.initialize_from_json = function(json) {
+      Bin.initialize_from_json = function(parent, json) {
         var completable, sub_completables, _i, _len, _ref;
         sub_completables = [];
         _ref = json.list;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           completable = _ref[_i];
           if ((completable.num != null) && (completable.list != null)) {
-            sub_completables.push(Bin.initialize_from_json(completable));
+            sub_completables.push(Bin.initialize_from_json(this, completable));
           } else {
             sub_completables.push(new Course(completable));
           }
@@ -45,7 +100,9 @@
       };
 
       Bin.prototype.num_complete = function() {
-        return 0;
+        return _.filter(function(completable) {
+          return completable.get('valid');
+        }).length;
       };
 
       Bin.prototype.is_valid = function() {
@@ -74,15 +131,17 @@
         Course.__super__.constructor.apply(this, arguments);
       }
 
+      Course.cache = {};
+
       Course.prototype.type = 'course';
 
-      Course.prototype.initialize = function(args) {
-        Course.__super__.initialize.call(this, args);
-        return this.set('quarter', null);
+      Course.prototype.initialize = function() {
+        this.set('quarter', null);
+        return Course.cache[this.get('id')] = this;
       };
 
-      Course.prototype.isValid = function() {
-        return false;
+      Course.prototype.is_valid = function() {
+        return this.get('quarter') !== null;
       };
 
       return Course;
@@ -108,7 +167,30 @@
       }
 
       Schedule.prototype.initialize = function() {
-        return this.set('quarters', new QuarterList);
+        var season, seasons, start_year, year, years, _i, _ref, _results, _results2;
+        this.set('quarters', new QuarterList);
+        start_year = this.get('grad_year') - 4;
+        years = (function() {
+          _results = [];
+          for (var _i = start_year, _ref = start_year + 4; start_year <= _ref ? _i <= _ref : _i >= _ref; start_year <= _ref ? _i++ : _i--){ _results.push(_i); }
+          return _results;
+        }).apply(this);
+        seasons = ['fall', 'winter', 'spring'];
+        _results2 = [];
+        for (year = 0; year <= 3; year++) {
+          _results2.push((function() {
+            var _results3;
+            _results3 = [];
+            for (season = 0; season <= 2; season++) {
+              _results3.push(this.get('quarters').add(new Quarter({
+                year: years[year],
+                season: seasons[season]
+              })));
+            }
+            return _results3;
+          }).call(this));
+        }
+        return _results2;
       };
 
       return Schedule;
@@ -133,8 +215,7 @@
         Quarter.__super__.constructor.apply(this, arguments);
       }
 
-      Quarter.prototype.initialize = function(attrs) {
-        Quarter.__super__.initialize.call(this, attrs);
+      Quarter.prototype.initialize = function() {
         return this.set('courses', new CourseList);
       };
 
@@ -149,25 +230,34 @@
         ScheduleView.__super__.constructor.apply(this, arguments);
       }
 
-      ScheduleView.prototype.tagName = 'div';
+      ScheduleView.prototype.tagName = 'table';
 
-      ScheduleView.prototype.id = 'schedule-viz';
+      ScheduleView.prototype.attributes = {
+        width: '100%',
+        height: '100%',
+        border: '1'
+      };
 
       ScheduleView.prototype.template = _.template($('#schedule-template').html());
 
       ScheduleView.prototype.initialize = function() {
-        return this.subviews = [];
-      };
-
-      ScheduleView.prototype.add_subview = function(subview) {
-        return this.subviews.push(subview);
+        var _this = this;
+        this.subviews = [];
+        return this.model.get('quarters').each(function(quarter) {
+          return _this.subviews.push(new QuarterView({
+            model: quarter
+          }));
+        });
       };
 
       ScheduleView.prototype.render = function() {
-        var i, _ref;
+        var quarter_ind, year_ind, years;
         $(this.el).html(this.template());
-        for (i = 0, _ref = this.subviews.length; 0 <= _ref ? i < _ref : i > _ref; 0 <= _ref ? i++ : i--) {
-          $(this.el).find("#quarter-" + (Math.floor(i / 3)) + "-" + (i % 3)).empty().append(this.subviews[i].render().el);
+        years = $(this.el).find('tr');
+        for (year_ind = 0; year_ind <= 3; year_ind++) {
+          for (quarter_ind = 0; quarter_ind <= 2; quarter_ind++) {
+            $(years.get(year_ind)).append(this.subviews[year_ind * 3 + quarter_ind].render().el);
+          }
         }
         return this;
       };
@@ -185,45 +275,64 @@
 
       QuarterView.prototype.template = _.template($('#quarter-template').html());
 
-      QuarterView.prototype.tagName = 'div';
+      QuarterView.prototype.tagName = 'td';
+
+      QuarterView.prototype.className = 'schedule-quarter';
 
       QuarterView.prototype.initialize = function() {
-        return this.model.get('courses').bind('add', this.render, this);
+        this.model.get('courses').bind('all', this.render, this);
+        return this.id = "quarter-" + (this.model.get('year')) + "-" + (this.model.get('season'));
       };
 
       QuarterView.prototype.render = function() {
+        var _this = this;
         $(this.el).html(this.template({
           courses: this.model.get('courses').toJSON()
         }));
+        $(this.el).droppable({
+          activeClass: 'will-accept',
+          hoverClass: 'hover',
+          tolerance: 'pointer',
+          drop: function(event, ui) {
+            var course_id;
+            course_id = ui.draggable.data('course-id');
+            _this.model.get('courses').add(Course.cache[course_id]);
+            Course.cache[course_id].check_valid();
+            return $(ui.draggable).detach();
+          }
+        });
         return this;
       };
 
       return QuarterView;
 
     })(Backbone.View);
-    AppView = (function(_super) {
+    SchedulePlanView = (function(_super) {
 
-      __extends(AppView, _super);
+      __extends(SchedulePlanView, _super);
 
-      function AppView() {
-        AppView.__super__.constructor.apply(this, arguments);
+      function SchedulePlanView() {
+        SchedulePlanView.__super__.constructor.apply(this, arguments);
       }
 
-      AppView.prototype.el = $('#scheduler-app');
+      SchedulePlanView.prototype.el = $('#scheduler-app')[0];
 
-      AppView.prototype.initialize = function(schedule_view, bin_view) {
-        this.schedule_view = schedule_view;
-        this.bin_view = bin_view;
-        return this.el = $('#scheduler-app');
+      SchedulePlanView.prototype.initialize = function() {
+        this.schedule_view = new ScheduleView({
+          model: this.model.get('schedule')
+        });
+        return this.objectives_view = new ObjectivesListView({
+          model: this.model.get('objectives_list')
+        });
       };
 
-      AppView.prototype.render = function() {
-        $(this.el).find('#schedule-viz-container').append(this.schedule_view.render().el);
-        $(this.el).find('#major-panel-container').append(this.bin_view.render().el);
+      SchedulePlanView.prototype.render = function() {
+        $(this.el).find('#schedule-view-container').empty().append(this.schedule_view.render().el);
+        $(this.el).find('#objectives-view-container').empty().append(this.objectives_view.render().el);
         return this;
       };
 
-      return AppView;
+      return SchedulePlanView;
 
     })(Backbone.View);
     BinView = (function(_super) {
@@ -242,29 +351,11 @@
 
       BinView.prototype.template = _.template($('#bin-template').html());
 
-      BinView.prototype.initialize = function() {
-        var _this = this;
-        this.subviews = [];
-        return this.model.get('sub_completables').each(function(completable) {
-          var new_view;
-          new_view = null;
-          if (completable.type === 'course') {
-            new_view = new CourseView({
-              model: completable
-            });
-          } else if (completable.type === 'bin') {
-            new_view = new BinView({
-              model: completable
-            });
-          }
-          return _this.subviews.push(new_view);
-        });
-      };
+      BinView.prototype.initialize = function() {};
 
       BinView.prototype.render = function() {
         var list,
           _this = this;
-        console.log('rendering BinView', this);
         $(this.el).html('foo');
         $(this.el).html(this.template({
           num_complete: this.model.num_complete(),
@@ -273,8 +364,23 @@
         }));
         $(this.el).addClass(this.model.is_valid() ? 'fulfilled' : 'not-fulfilled');
         list = $(this.el).find('ul');
-        _.each(this.subviews, function(subview) {
-          return list.append($('<li class="bin-item">').append(subview.render().el));
+        this.subviews = [];
+        this.model.get('sub_completables').each(function(completable) {
+          var new_view;
+          new_view = null;
+          if (completable.type === 'course' && !completable.get('valid')) {
+            new_view = new CourseView({
+              model: completable
+            });
+          } else if (completable.type === 'bin') {
+            new_view = new BinView({
+              model: completable
+            });
+          } else {
+            console.log(completable);
+            throw completable;
+          }
+          return list.append($('<li class="bin-item">').append(new_view.render().el));
         });
         return this;
       };
@@ -292,70 +398,119 @@
 
       CourseView.prototype.tagName = 'div';
 
+      CourseView.prototype.initialize = function() {};
+
       CourseView.prototype.render = function() {
-        console.log('rendering CourseView', this);
         $(this.el).addClass('course-in-bin').html(this.model.get('title'));
+        $(this.el).data('course-id', this.model.get('id'));
+        $(this.el).draggable({
+          revert: 'invalid'
+        });
         return this;
       };
 
       return CourseView;
 
     })(Backbone.View);
-    grad_year = 2015;
-    start_year = grad_year - 4;
-    schedule = new Schedule({
-      grad_year: grad_year
-    });
-    window.schedule = schedule;
-    schedule_view = new ScheduleView({
-      model: schedule
-    });
-    years = (function() {
-      _results = [];
-      for (var _i = start_year, _ref = start_year + 4; start_year <= _ref ? _i <= _ref : _i >= _ref; start_year <= _ref ? _i++ : _i--){ _results.push(_i); }
-      return _results;
-    }).apply(this);
-    seasons = ['fall', 'winter', 'spring'];
-    for (year = 0; year <= 3; year++) {
-      for (season = 0; season <= 2; season++) {
-        quarter = new Quarter({
-          year: years[year],
-          season: seasons[season]
-        });
-        view = new QuarterView({
-          model: quarter
-        });
-        schedule_view.add_subview(view);
-        schedule.get('quarters').add(quarter);
+    MajorView = (function(_super) {
+
+      __extends(MajorView, _super);
+
+      function MajorView() {
+        MajorView.__super__.constructor.apply(this, arguments);
       }
-    }
+
+      MajorView.prototype.tagName = 'div';
+
+      MajorView.prototype.className = 'objective-major';
+
+      MajorView.prototype.template = _.template($('#objective-template').html());
+
+      MajorView.prototype.initialize = function() {
+        return this.bin_view = new BinView({
+          model: this.model.get('bin')
+        });
+      };
+
+      MajorView.prototype.render = function() {
+        $(this.el).html(this.template({
+          title: this.model.get('title')
+        }));
+        $(this.el).find(".objective-bin").append(this.bin_view.render().el);
+        return this;
+      };
+
+      return MajorView;
+
+    })(Backbone.View);
+    ObjectivesListView = (function(_super) {
+
+      __extends(ObjectivesListView, _super);
+
+      function ObjectivesListView() {
+        ObjectivesListView.__super__.constructor.apply(this, arguments);
+      }
+
+      ObjectivesListView.prototype.tagName = 'div';
+
+      ObjectivesListView.prototype.id = 'objectives-view';
+
+      ObjectivesListView.prototype.template = _.template($('#objectives-list-template').html());
+
+      ObjectivesListView.prototype.initialize = function() {
+        var _this = this;
+        this.subviews = [];
+        return this.model.each(function(objective) {
+          var new_view;
+          switch (objective.get('type')) {
+            case Objective.TYPE_MAJOR:
+              new_view = new MajorView({
+                model: objective
+              });
+              return _this.subviews.push(new_view);
+            default:
+              throw "not implemented";
+          }
+        });
+      };
+
+      ObjectivesListView.prototype.render = function() {
+        var the_list,
+          _this = this;
+        $(this.el).html(this.template());
+        the_list = $(this.el).find('ul');
+        _.each(this.subviews, function(subview) {
+          return the_list.append($("<li>").append(subview.render().el));
+        });
+        return this;
+      };
+
+      return ObjectivesListView;
+
+    })(Backbone.View);
     $('body').ajaxError(function() {
       return console.log(arguments[3].toString());
     });
-    return $.getJSON('/static/sample-schedule.json', function(sample_schedule) {
-      var course, course_list, enum_years, quarter_model, season, year, _j, _len;
-      enum_years = ['first', 'second', 'third', 'fourth'];
-      for (year = 0; year <= 3; year++) {
-        for (season = 0; season <= 2; season++) {
-          course_list = sample_schedule[enum_years[year]][seasons[season]];
-          quarter_model = schedule.get('quarters').at(year * 3 + season);
-          for (_j = 0, _len = course_list.length; _j < _len; _j++) {
-            course = course_list[_j];
-            quarter_model.get('courses').add(new Course({
-              title: course
-            }));
-          }
-        }
-      }
-      return $.getJSON('/static/major_reqs/cmsc.json', function(cmsc_bin) {
-        var app_view, bin_view, cmsc;
-        cmsc = Bin.initialize_from_json(cmsc_bin);
-        bin_view = new BinView({
-          model: cmsc
-        });
-        app_view = new AppView(schedule_view, bin_view);
-        return app_view.render();
+    schedule = new Schedule({
+      grad_year: 2015
+    });
+    objectives_list = new ObjectivesList;
+    return $.getJSON('/static/major_reqs/cmsc.json', function(cmsc_bin) {
+      var app_view, cmsc, schedule_plan;
+      cmsc = Bin.initialize_from_json(null, cmsc_bin);
+      objectives_list.add(new Objective({
+        title: "Computer Science",
+        type: Objective.TYPE_MAJOR,
+        bin: cmsc
+      }));
+      schedule_plan = new SchedulePlan({
+        schedule: schedule,
+        objectives_list: objectives_list
       });
+      app_view = new SchedulePlanView({
+        model: schedule_plan
+      });
+      return app_view.render();
     });
   });
 

@@ -5,6 +5,7 @@
     <script src="/static/js/lib/jquery-ui/js/jquery-1.7.1.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="/static/js/lib/underscore.js" type="text/javascript" charset="utf-8"></script>
     <script src="/static/js/lib/backbone.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/static/js/lib/jquery-ui/js/jquery-ui-1.8.17.custom.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="static/js/application.js" type="text/javascript" charset="utf-8"></script>
     <link rel="stylesheet" href="/static/css/style.css" type="text/css" media="screen" title="no title" charset="utf-8">
   </head>
@@ -13,22 +14,16 @@
     <hr/>
     <table width="100%" height="100%" id="scheduler-app">
       <tr valign="top">
-        <td id="schedule-viz-container"></td>
-        <td id="major-panel-container"></td>
+        <td id="schedule-view-container"></td>
+        <td id="objectives-view-container"></td>
       </tr>
     </table>
     <!-- Templates -->
     <script type="text/template" id="schedule-template">
-      <table id="schedule-viz-table" width="100%" height="100%" border="1">
-        <% _.each(_.range(4), function(year) { %>
-          <tr class="schedule-year">
-            <% _.each(_.range(3), function(quarter) { %>
-              <td class="schedule-quarter" id="<%= 'quarter-' + year + '-' + quarter %>">
-              </td>
-            <% }) %>
-          </tr>
-        <% }) %>
-      </table>
+      <% _.each(_.range(4), function(year) { %>
+        <tr class="schedule-year">
+        </tr>
+      <% }) %>
     </script>
     <script type="text/template" id="quarter-template">
       <ul class="quarter-course-list">
@@ -44,6 +39,14 @@
       <div class="bin-stats"><%= num_complete %> / <%= num_required %> Complete</div>
       <ul class="bin-items">
       </ul>
+    </script>
+    <script type="text/template" id="objective-template">
+      <div class="objective-name"><%= title %> Major</div>
+      <div class="objective-bin"></div>
+    </script>
+    <script type="text/template" id="objectives-list-template">
+      <div class="objectives-header">Your Objectives</div>
+      <ul></ul>
     </script>
   </body>
 </html>
