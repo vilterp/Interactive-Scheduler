@@ -1,0 +1,7 @@
+- SHORT-RANGE:
+  - basic schedule manipulation
+    - drag courses once they're on the schedule
+      - off schedule (should fly back to bin...)
+      - to different quarter
+  - change the layout so it stays the same as courses are dragged; doesn't look like shit
+  - ...

@@ -1,5 +1,20 @@
 jQuery ->
   
+  class DragBoard extends Backbone.Model
+    initialize: ->
+      this.set('dragging', null)
+    start_drag: (view) ->
+      this.set('dragging', view)
+    get_dragging_item: (view) ->
+      if this.get('dragging')?
+        this.get('dragging')
+      else
+        throw 'not currently dragging'
+    stop_drag: ->
+      this.set('dragging_view', null)
+  
+  window.drag_board = new DragBoard
+  
   # ========== Models =======================================================================
   
   class SchedulePlan extends Backbone.Model
@@ -44,6 +59,11 @@ jQuery ->
       this.set('num_required', num_required)
       this.set('sub_completables', new CompletablesList(sub_completables))
     
+    initialize: ->
+      this.on 'child_validated', (model) =>
+        this.set 'num_complete', this.num_complete()
+        this.set 'valid', (this.get('num_complete') == this.get('num_required'))
+    
     @initialize_from_json: (parent, json) ->
       sub_completables = []
       for completable in json.list
@@ -75,6 +95,9 @@ jQuery ->
     type: 'course'
     initialize: ->
       this.set('quarter', null) # initially not on schedule
+      this.on 'dragged_out', =>
+        this.set('valid', true)
+        @parent.trigger 'child_validated', this
       Course.cache[this.get('id')] = this
       # TODO: initialize prereqs correctly
     
@@ -137,9 +160,12 @@ jQuery ->
         hoverClass: 'hover'
         tolerance: 'pointer'
         drop: (event, ui) =>
-          course_id = ui.draggable.data('course-id')
-          @model.get('courses').add(Course.cache[course_id])
-          Course.cache[course_id].set('quarter', @model).check_valid()
+          dragged_view = window.drag_board.get_dragging_item()
+          window.drag_board.stop_drag()
+          the_model = dragged_view.model
+          @model.get('courses').add(the_model)
+          the_model.set('quarter', @model)
+          the_model.trigger('dragged_out')
           $(ui.draggable).detach()
       })
       return this
@@ -153,30 +179,44 @@ jQuery ->
       $(@el).find('#schedule-view-container').empty().append(@schedule_view.render().el)
       $(@el).find('#objectives-view-container').empty().append(@objectives_view.render().el)
       return this
-    
   
   class BinView extends Backbone.View
     tagName: 'div'
     attributes: { class: 'bin' }
     template: _.template($('#bin-template').html())
     initialize: ->
-      @model.on 'change:valid', => console.log 'CHANGE IN VALID', this
-      @model.on 'change:valid change:num_complete', this.render_top, this
-    render_top: ->
-      if @parent_view == undefined
-        this.render()
-      else
-        @parent_view.render_top()
-        
-    render: ->
-      console.log 'rendering BinView', this
-      $(@el).html(@template({
-        num_complete: @model.num_complete(),
-        num_required: @model.get('num_required'),
-        title: if @model.get('title')? then @model.get('title') else null
-      }))
+      @model.on 'child_validated', this.reflect_child_validation, this
+      @model.on 'child_validated', =>
+        if @model.get('valid')
+          @model.parent?.trigger 'child_validated', @model
+    reflect_child_validation: (child_model) ->
+      if child_model.type == 'course'
+        # TODO: this is a little ugly.
+        i = 0
+        j = 0
+        sub_completables = @model.get('sub_completables')
+        console.log sub_completables
+        while i < sub_completables.length
+          sc = sub_completables.at(i)
+          if sc == child_model
+            break
+          if sc.type == 'bin' || !sc.get('valid')
+            j += 1
+          i += 1
+        console.log 'removing item', j
+        $(@el).children('ul').children().eq(j).remove()
+      this.render_stats()
+    render_stats: ->
+      # console.log 'rendering bin stats', $(@el).find('.bin-stats').first()
+      $(@el).find('.bin-stats').first().html("#{@model.get('num_complete')} / #{@model.get('num_required')} Completed")
       $(@el).removeClass('fulfilled').removeClass('not-fulfilled')
             .addClass(if @model.is_valid() then 'fulfilled' else 'not-fulfilled')
+    render: ->
+      # console.log 'rendering BinView', @el
+      $(@el).html(@template({
+        title: if @model.get('title')? then @model.get('title') else null
+      }))
+      this.render_stats()
       list = $(@el).find('ul')
       # render bin items
       @model.get('sub_completables').each (completable) =>
@@ -197,11 +237,11 @@ jQuery ->
     initialize: ->
       @model.on 'change:valid', this.render, this
     render: ->
-      console.log 'rendering CourseView', this
+      # console.log 'rendering CourseView', @el
       $(@el).addClass('course-in-bin').html(@model.get('title'))
-      $(@el).data('course-id', @model.get('id'))
       $(@el).draggable({
-        # cursor: 'move'
+        drag: (event, ui) =>
+          window.drag_board.start_drag(this)
         revert: 'invalid'
       })
       return this

@@ -3,8 +3,40 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   jQuery(function() {
-    var Bin, BinView, Completable, CompletablesList, Course, CourseList, CourseView, MajorView, Objective, ObjectivesList, ObjectivesListView, Quarter, QuarterList, QuarterView, Schedule, SchedulePlan, SchedulePlanView, ScheduleView, objectives_list, schedule,
+    var Bin, BinView, Completable, CompletablesList, Course, CourseList, CourseView, DragBoard, MajorView, Objective, ObjectivesList, ObjectivesListView, Quarter, QuarterList, QuarterView, Schedule, SchedulePlan, SchedulePlanView, ScheduleView, objectives_list, schedule,
       _this = this;
+    DragBoard = (function(_super) {
+
+      __extends(DragBoard, _super);
+
+      function DragBoard() {
+        DragBoard.__super__.constructor.apply(this, arguments);
+      }
+
+      DragBoard.prototype.initialize = function() {
+        return this.set('dragging', null);
+      };
+
+      DragBoard.prototype.start_drag = function(view) {
+        return this.set('dragging', view);
+      };
+
+      DragBoard.prototype.get_dragging_item = function(view) {
+        if (this.get('dragging') != null) {
+          return this.get('dragging');
+        } else {
+          throw 'not currently dragging';
+        }
+      };
+
+      DragBoard.prototype.stop_drag = function() {
+        return this.set('dragging_view', null);
+      };
+
+      return DragBoard;
+
+    })(Backbone.Model);
+    window.drag_board = new DragBoard;
     SchedulePlan = (function(_super) {
 
       __extends(SchedulePlan, _super);
@@ -90,6 +122,14 @@
         this.set('sub_completables', new CompletablesList(sub_completables));
       }
 
+      Bin.prototype.initialize = function() {
+        var _this = this;
+        return this.on('child_validated', function(model) {
+          _this.set('num_complete', _this.num_complete());
+          return _this.set('valid', _this.get('num_complete') === _this.get('num_required'));
+        });
+      };
+
       Bin.initialize_from_json = function(parent, json) {
         var completable, new_bin, sc, sub_completables, _i, _j, _len, _len2, _ref;
         sub_completables = [];
@@ -156,7 +196,12 @@
       Course.prototype.type = 'course';
 
       Course.prototype.initialize = function() {
+        var _this = this;
         this.set('quarter', null);
+        this.on('dragged_out', function() {
+          _this.set('valid', true);
+          return _this.parent.trigger('child_validated', _this);
+        });
         return Course.cache[this.get('id')] = this;
       };
 
@@ -314,10 +359,13 @@
           hoverClass: 'hover',
           tolerance: 'pointer',
           drop: function(event, ui) {
-            var course_id;
-            course_id = ui.draggable.data('course-id');
-            _this.model.get('courses').add(Course.cache[course_id]);
-            Course.cache[course_id].set('quarter', _this.model).check_valid();
+            var dragged_view, the_model;
+            dragged_view = window.drag_board.get_dragging_item();
+            window.drag_board.stop_drag();
+            the_model = dragged_view.model;
+            _this.model.get('courses').add(the_model);
+            the_model.set('quarter', _this.model);
+            the_model.trigger('dragged_out');
             return $(ui.draggable).detach();
           }
         });
@@ -373,30 +421,46 @@
 
       BinView.prototype.initialize = function() {
         var _this = this;
-        this.model.on('change:valid', function() {
-          return console.log('CHANGE IN VALID', _this);
+        this.model.on('child_validated', this.reflect_child_validation, this);
+        return this.model.on('child_validated', function() {
+          var _ref;
+          if (_this.model.get('valid')) {
+            return (_ref = _this.model.parent) != null ? _ref.trigger('child_validated', _this.model) : void 0;
+          }
         });
-        return this.model.on('change:valid change:num_complete', this.render_top, this);
       };
 
-      BinView.prototype.render_top = function() {
-        if (this.parent_view === void 0) {
-          return this.render();
-        } else {
-          return this.parent_view.render_top();
+      BinView.prototype.reflect_child_validation = function(child_model) {
+        var i, j, sc, sub_completables;
+        if (child_model.type === 'course') {
+          i = 0;
+          j = 0;
+          sub_completables = this.model.get('sub_completables');
+          console.log(sub_completables);
+          while (i < sub_completables.length) {
+            sc = sub_completables.at(i);
+            if (sc === child_model) break;
+            if (sc.type === 'bin' || !sc.get('valid')) j += 1;
+            i += 1;
+          }
+          console.log('removing item', j);
+          $(this.el).children('ul').children().eq(j).remove();
         }
+        return this.render_stats();
+      };
+
+      BinView.prototype.render_stats = function() {
+        $(this.el).find('.bin-stats').first().html("" + (this.model.get('num_complete')) + " / " + (this.model.get('num_required')) + " Completed");
+        return $(this.el).removeClass('fulfilled').removeClass('not-fulfilled').addClass(this.model.is_valid() ? 'fulfilled' : 'not-fulfilled');
       };
 
       BinView.prototype.render = function() {
         var list,
           _this = this;
-        console.log('rendering BinView', this);
         $(this.el).html(this.template({
-          num_complete: this.model.num_complete(),
-          num_required: this.model.get('num_required'),
           title: this.model.get('title') != null ? this.model.get('title') : null
         }));
-        $(this.el).removeClass('fulfilled').removeClass('not-fulfilled').addClass(this.model.is_valid() ? 'fulfilled' : 'not-fulfilled');
+        this.render_stats();
         list = $(this.el).find('ul');
         this.model.get('sub_completables').each(function(completable) {
           var new_view;
@@ -441,10 +505,12 @@
       };
 
       CourseView.prototype.render = function() {
-        console.log('rendering CourseView', this);
+        var _this = this;
         $(this.el).addClass('course-in-bin').html(this.model.get('title'));
-        $(this.el).data('course-id', this.model.get('id'));
         $(this.el).draggable({
+          drag: function(event, ui) {
+            return window.drag_board.start_drag(_this);
+          },
           revert: 'invalid'
         });
         return this;
