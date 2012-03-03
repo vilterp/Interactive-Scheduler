@@ -1,7 +1,33 @@
-- SHORT-RANGE:
-  - basic schedule manipulation
-    - drag courses once they're on the schedule
-      - off schedule (should fly back to bin...)
-      - to different quarter
-  - change the layout so it stays the same as courses are dragged; doesn't look like shit
-  - ...
+SHORT RANGE
+
+- basic schedule manipulation
+  - drag courses once they're on the schedule
+    - off schedule (should fly back to bin...)
+    - to different quarter
+- change the layout so it stays the same as courses are dragged; doesn't look like shit
+- persistence w/ localStorage
+
+MEDIUM RANGE
+
+- display num credits?
+- add Core objective
+- more usability improvements
+  - mousing over bin highlights courses in schedule from that bin
+
+LONG RANGE
+
+- more majors; add arbitrary objectives through autocompleting list; remove objectives
+- prereq validation
+- quarter offered validation
+- undo (just because it would be cool)
+
+LONGER RANGE
+
+- more intelligence
+  - given where you are, what can you do before graduating? Can I do X before graduating?
+- more views
+  - Gantt chart?
+- more info
+  - textbooks?
+  - time schedules?
+  - instructor evaluations?
