@@ -65,7 +65,12 @@
       };
 
       Completable.prototype.check_valid = function() {
-        return this.set('valid', this.is_valid());
+        this.set('valid', this.is_valid());
+        if (this.parent != null) {
+          return this.parent.check_valid();
+        } else {
+          return console.log('no parent');
+        }
       };
 
       return Completable;
@@ -80,12 +85,13 @@
       function Bin(title, num_required, sub_completables) {
         Bin.__super__.constructor.call(this);
         this.set('title', title);
+        this.set('num_complete', 0);
         this.set('num_required', num_required);
         this.set('sub_completables', new CompletablesList(sub_completables));
       }
 
       Bin.initialize_from_json = function(parent, json) {
-        var completable, sub_completables, _i, _len, _ref;
+        var completable, new_bin, sc, sub_completables, _i, _j, _len, _len2, _ref;
         sub_completables = [];
         _ref = json.list;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -96,17 +102,31 @@
             sub_completables.push(new Course(completable));
           }
         }
-        return new Bin(json.title, json.num, sub_completables);
+        new_bin = new Bin(json.title, json.num, sub_completables);
+        for (_j = 0, _len2 = sub_completables.length; _j < _len2; _j++) {
+          sc = sub_completables[_j];
+          sc.parent = new_bin;
+        }
+        return new_bin;
       };
 
       Bin.prototype.num_complete = function() {
-        return _.filter(function(completable) {
-          return completable.get('valid');
-        }).length;
+        if (this.get('sub_completables') != null) {
+          return this.get('sub_completables').filter(function(completable) {
+            return completable.get('valid');
+          }).length;
+        } else {
+          return 0;
+        }
       };
 
       Bin.prototype.is_valid = function() {
-        return this.num_complete() === this.get('num_required');
+        var new_num;
+        new_num = this.num_complete();
+        if (this.get('num_complete') !== new_num) {
+          this.set('num_complete', new_num);
+        }
+        return this.get('num_complete') === this.get('num_required');
       };
 
       return Bin;
@@ -297,7 +317,7 @@
             var course_id;
             course_id = ui.draggable.data('course-id');
             _this.model.get('courses').add(Course.cache[course_id]);
-            Course.cache[course_id].check_valid();
+            Course.cache[course_id].set('quarter', _this.model).check_valid();
             return $(ui.draggable).detach();
           }
         });
@@ -351,36 +371,54 @@
 
       BinView.prototype.template = _.template($('#bin-template').html());
 
-      BinView.prototype.initialize = function() {};
+      BinView.prototype.initialize = function() {
+        var _this = this;
+        this.model.on('change:valid', function() {
+          return console.log('CHANGE IN VALID', _this);
+        });
+        return this.model.on('change:valid change:num_complete', this.render_top, this);
+      };
+
+      BinView.prototype.render_top = function() {
+        if (this.parent_view === void 0) {
+          return this.render();
+        } else {
+          return this.parent_view.render_top();
+        }
+      };
 
       BinView.prototype.render = function() {
         var list,
           _this = this;
-        $(this.el).html('foo');
+        console.log('rendering BinView', this);
         $(this.el).html(this.template({
           num_complete: this.model.num_complete(),
           num_required: this.model.get('num_required'),
           title: this.model.get('title') != null ? this.model.get('title') : null
         }));
-        $(this.el).addClass(this.model.is_valid() ? 'fulfilled' : 'not-fulfilled');
+        $(this.el).removeClass('fulfilled').removeClass('not-fulfilled').addClass(this.model.is_valid() ? 'fulfilled' : 'not-fulfilled');
         list = $(this.el).find('ul');
-        this.subviews = [];
         this.model.get('sub_completables').each(function(completable) {
           var new_view;
           new_view = null;
-          if (completable.type === 'course' && !completable.get('valid')) {
-            new_view = new CourseView({
-              model: completable
-            });
+          if (completable.type === 'course') {
+            if (!completable.get('valid')) {
+              new_view = new CourseView({
+                model: completable,
+                parent_view: _this
+              });
+            }
           } else if (completable.type === 'bin') {
             new_view = new BinView({
-              model: completable
+              model: completable,
+              parent_view: _this
             });
           } else {
-            console.log(completable);
             throw completable;
           }
-          return list.append($('<li class="bin-item">').append(new_view.render().el));
+          if (new_view !== null) {
+            return list.append($('<li class="bin-item">').append(new_view.render().el));
+          }
         });
         return this;
       };
@@ -398,9 +436,12 @@
 
       CourseView.prototype.tagName = 'div';
 
-      CourseView.prototype.initialize = function() {};
+      CourseView.prototype.initialize = function() {
+        return this.model.on('change:valid', this.render, this);
+      };
 
       CourseView.prototype.render = function() {
+        console.log('rendering CourseView', this);
         $(this.el).addClass('course-in-bin').html(this.model.get('title'));
         $(this.el).data('course-id', this.model.get('id'));
         $(this.el).draggable({

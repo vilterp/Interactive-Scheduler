@@ -28,7 +28,10 @@ jQuery ->
     
     check_valid: ->
       this.set('valid', this.is_valid())
-      # @parent.check_valid()
+      if @parent?
+        @parent.check_valid()
+      else
+        console.log 'no parent'
     
   
   class Bin extends Completable
@@ -37,6 +40,7 @@ jQuery ->
     constructor: (title, num_required, sub_completables) ->
       super()
       this.set('title', title)
+      this.set('num_complete', 0)
       this.set('num_required', num_required)
       this.set('sub_completables', new CompletablesList(sub_completables))
     
@@ -47,13 +51,22 @@ jQuery ->
           sub_completables.push(Bin.initialize_from_json(this, completable))
         else                                      # a course
           sub_completables.push(new Course(completable))
-      return new Bin(json.title, json.num, sub_completables)
+      new_bin = new Bin(json.title, json.num, sub_completables)
+      for sc in sub_completables
+        sc.parent = new_bin
+      return new_bin
     
     num_complete: ->
-      return _.filter((completable) -> completable.get('valid')).length
+      if this.get('sub_completables')?
+        return this.get('sub_completables').filter((completable) -> completable.get('valid')).length
+      else
+        return 0
     
     is_valid: ->
-      this.num_complete() == this.get('num_required')
+      new_num = this.num_complete()
+      if this.get('num_complete') != new_num
+        this.set('num_complete', new_num)
+      this.get('num_complete') == this.get('num_required')
   
   class CompletablesList extends Backbone.Collection
   
@@ -126,7 +139,7 @@ jQuery ->
         drop: (event, ui) =>
           course_id = ui.draggable.data('course-id')
           @model.get('courses').add(Course.cache[course_id])
-          Course.cache[course_id].check_valid()
+          Course.cache[course_id].set('quarter', @model).check_valid()
           $(ui.draggable).detach()
       })
       return this
@@ -147,35 +160,44 @@ jQuery ->
     attributes: { class: 'bin' }
     template: _.template($('#bin-template').html())
     initialize: ->
-      # @model.bind 'change:valid', this.render, this
+      @model.on 'change:valid', => console.log 'CHANGE IN VALID', this
+      @model.on 'change:valid change:num_complete', this.render_top, this
+    render_top: ->
+      if @parent_view == undefined
+        this.render()
+      else
+        @parent_view.render_top()
+        
     render: ->
-      $(@el).html('foo')
+      console.log 'rendering BinView', this
       $(@el).html(@template({
         num_complete: @model.num_complete(),
         num_required: @model.get('num_required'),
         title: if @model.get('title')? then @model.get('title') else null
       }))
-      $(@el).addClass(if @model.is_valid() then 'fulfilled' else 'not-fulfilled')
+      $(@el).removeClass('fulfilled').removeClass('not-fulfilled')
+            .addClass(if @model.is_valid() then 'fulfilled' else 'not-fulfilled')
       list = $(@el).find('ul')
       # render bin items
-      @subviews = []
       @model.get('sub_completables').each (completable) =>
         new_view = null
-        if completable.type == 'course' and !completable.get('valid')
-          new_view = new CourseView({model: completable})
+        if completable.type == 'course'
+          if !completable.get('valid')
+            new_view = new CourseView({model: completable, parent_view: this})
         else if completable.type == 'bin'
-          new_view = new BinView({model: completable})
+          new_view = new BinView({model: completable, parent_view: this})
         else
-          console.log completable
           throw completable
-        list.append($('<li class="bin-item">').append(new_view.render().el))
+        if new_view != null
+          list.append($('<li class="bin-item">').append(new_view.render().el))
       return this
    
   class CourseView extends Backbone.View
     tagName: 'div'
     initialize: ->
-      # on change in quarter: check_valid parent
+      @model.on 'change:valid', this.render, this
     render: ->
+      console.log 'rendering CourseView', this
       $(@el).addClass('course-in-bin').html(@model.get('title'))
       $(@el).data('course-id', @model.get('id'))
       $(@el).draggable({
