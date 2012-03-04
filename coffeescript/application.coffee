@@ -308,8 +308,7 @@ jQuery ->
     # initialize the app (this triggers all the rendering!)
     app_view = new SchedulePlanView({model: schedule_plan})
     app_view.render()
-    
+    $('ul').collapse('reset')
     $('.bin-title').each (k, v) =>
-      $(v).parent().parent().parent().children('ul')
-        .removeClass('in')
-        .addClass('collapse')
+      $(v).parent().parent().parent().children('ul').collapse('toggle')
+  

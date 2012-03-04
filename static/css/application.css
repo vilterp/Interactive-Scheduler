@@ -3501,13 +3501,6 @@ a.thumbnail:hover {
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
   border-radius: 4px;
-  /*  .table-zebra;*/
-
-  /*  width:100%;*/
-
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 #schedule-view th + th,
 #schedule-view td + td,
@@ -3550,9 +3543,8 @@ a.thumbnail:hover {
   clear: both;
 }
 .schedule-quarter {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  /*  .text-overflow();*/
+
   -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
   -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
@@ -3595,12 +3587,15 @@ a.thumbnail:hover {
   -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
 }
-ul.bin-items {
-  /*  padding:0.25em;*/
+ul {
+  /* Needed to make the course drag above out of board? */
+
+  overflow: hidden;
+  /* 'in' means the bin is collapsed */
 
 }
-.bin-title {
-  text-shadow: 0 2px 0 rgba(255, 255, 255, 0.5);
+ul.in {
+  overflow: visible;
 }
 .bin-info {
   padding: 8px 35px 8px 14px;
@@ -3615,8 +3610,6 @@ ul.bin-items {
   background-color: #dff0d8;
   border-color: #d6e9c6;
   color: #468847;
-  /*  border: 1px solid black;*/
-
 }
 div.bin.fulfilled {
   /*  .alert-success;*/
@@ -3628,8 +3621,6 @@ div.bin.not-fulfilled {
 }
 .course-in-bin {
   max-width: 100%;
-  /*  .pull-right;*/
-
   display: inline-block;
   padding: 4px 10px 4px;
   margin-bottom: 0;
@@ -3662,8 +3653,6 @@ div.bin.not-fulfilled {
   cursor: pointer;
   filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
   *margin-left: .3em;
-  /*  .btn-large;*/
-
   cursor: move;
 }
 .course-in-bin:hover,

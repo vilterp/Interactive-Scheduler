@@ -484,8 +484,9 @@
         model: schedule_plan
       });
       app_view.render();
+      $('ul').collapse('reset');
       return $('.bin-title').each(__bind(function(k, v) {
-        return $(v).parent().parent().parent().children('ul').removeClass('in').addClass('collapse');
+        return $(v).parent().parent().parent().children('ul').collapse('toggle');
       }, this));
     }, this));
   });

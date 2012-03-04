@@ -1,12 +1,9 @@
 #schedule-view { 
   .table-bordered;
-/*  .table-zebra;*/
-/*  width:100%;*/
-  .text-overflow;
 }
 .schedule-year{.makeRow();}
 .schedule-quarter {
-  .text-overflow();
+/*  .text-overflow();*/
   .box-shadow;
   .size(10em, 17em);
   &.will-accept {
@@ -29,19 +26,14 @@
   .box-shadow;
 }
 
-ul.bin-items{
-/*  padding:0.25em;*/
+ul{
+/* Needed to make the course drag above out of board? */
+  overflow: hidden;
+  &.in{  overflow: visible; } /* 'in' means the bin is collapsed */
 }
-.bin-stats{}
-.bin-title{
-  
-  text-shadow: 0 2px 0 rgba(255,255,255,.5);
-}
-
 .bin-info {
   .alert;
   .alert-success;
-/*  border: 1px solid black;*/
 }
 
 div.bin.fulfilled {
@@ -54,8 +46,6 @@ div.bin.not-fulfilled {
 
 .course-in-bin {
   max-width: 100%;
-/*  .pull-right;*/
   .btn;
-/*  .btn-large;*/
   cursor: move;
 }
