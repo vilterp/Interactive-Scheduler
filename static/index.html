@@ -42,16 +42,16 @@
       </ul>
     </script>
     <script type="text/template" id="bin-template">
-      <ul class="bin-items unstyled">
-      <a class="accordion-toggle" data-toggle="collapse" data-parent="objectives-view-container" href="#<%=this.model.cid%>" >
+      <% var id=parseInt(Math.random()*10000)%>
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="" href="#<%=id%>" >
         <% if(title != null) { %>
-          <h6><li class="bin-title bin-info row"><i class="icon-minus-sign"></i><%= title %>
-        <% }else{ %> <li class="bin-info row"><i class="icon-minus-sign"></i> <% } %>
+          <h6><div class="bin-title bin-info row"><i class="icon-plus-sign"></i><%= title %>
+        <% }else{ %> <div class="bin-info row"><i class="icon-minus-sign"></i> <% } %>
         
          <span class="bin-stats"></span></h6>
-        </li>
+        </div>
       </a>
-      </ul>
+      <ul class="bin-items unstyled in" id=<%=id%> ></ul>
     </script>
     <script type="text/template" id="objective-template">
       <div class="objective-name"><%= title %> Major <span class="bin-stats label label-info">p of q?</span>

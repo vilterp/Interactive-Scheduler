@@ -312,10 +312,8 @@
         BinView.__super__.constructor.apply(this, arguments);
       }
       BinView.prototype.tagName = 'div';
-      console.log(BinView);
       BinView.prototype.attributes = {
-        "class": 'bin',
-        id: ''
+        "class": 'bin'
       };
       BinView.prototype.template = _.template($('#bin-template').html());
       BinView.prototype.initialize = function() {
@@ -355,6 +353,7 @@
       BinView.prototype.render = function() {
         var list;
         $(this.el).html(this.template({
+          id: "bin_id_" + Math.random() * 100000,
           title: this.model.get('title') != null ? this.model.get('title') : null
         }));
         this.render_stats();
@@ -378,7 +377,7 @@
             throw completable;
           }
           if (new_view !== null) {
-            return list.append($('<li class="bin-item" id=' + completable.id + '>').append(new_view.render().el));
+            return list.append($('<li class="bin-item">').append(new_view.render().el));
           }
         }, this));
         return this;
@@ -484,7 +483,10 @@
       app_view = new SchedulePlanView({
         model: schedule_plan
       });
-      return app_view.render();
+      app_view.render();
+      return $('.bin-title').each(__bind(function(k, v) {
+        return $(v).parent().parent().parent().children('ul').removeClass('in').addClass('collapse');
+      }, this));
     }, this));
   });
 }).call(this);

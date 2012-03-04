@@ -181,10 +181,8 @@ jQuery ->
   
   class BinView extends Backbone.View
     tagName: 'div'
-    console.log(this)
     attributes: 
       class: 'bin'
-      id:     ''
     template: _.template($('#bin-template').html())
     initialize: ->
       @model.on 'child_validated', this.reflect_child_validation, this
@@ -216,6 +214,7 @@ jQuery ->
     render: ->
       # console.log 'rendering BinView', @el
       $(@el).html(@template({
+        id:   "bin_id_"+Math.random()*100000
         title: if @model.get('title')? then @model.get('title') else null
       }))
       this.render_stats()
@@ -231,7 +230,7 @@ jQuery ->
         else
           throw completable
         if new_view != null
-          list.append($('<li class="bin-item" id='+completable.id+'>').append(new_view.render().el))
+          list.append($('<li class="bin-item">').append(new_view.render().el))
       return this
    
   class CourseView extends Backbone.View
@@ -309,6 +308,8 @@ jQuery ->
     # initialize the app (this triggers all the rendering!)
     app_view = new SchedulePlanView({model: schedule_plan})
     app_view.render()
-  
-  # This will go somewhere else eventually, but also enable accordian
-  # $(".collapse").collapse()
+    
+    $('.bin-title').each (k, v) =>
+      $(v).parent().parent().parent().children('ul')
+        .removeClass('in')
+        .addClass('collapse')
