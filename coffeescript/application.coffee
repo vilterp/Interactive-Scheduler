@@ -98,6 +98,7 @@ jQuery ->
       this.on 'dragged_out', =>
         this.set('valid', true)
         @parent.trigger 'child_validated', this
+        
       Course.cache[this.get('id')] = this
       # TODO: initialize prereqs correctly
     
@@ -128,9 +129,7 @@ jQuery ->
   class ScheduleView extends Backbone.View
     tagName: 'table'
     attributes:
-      width: '100%'
-      height: '100%'
-      border: '1'
+      id: 'schedule-view'
     template: _.template($('#schedule-template').html())
     initialize: ->
       @subviews = []
@@ -182,7 +181,10 @@ jQuery ->
   
   class BinView extends Backbone.View
     tagName: 'div'
-    attributes: { class: 'bin' }
+    console.log(this)
+    attributes: 
+      class: 'bin'
+      id:     ''
     template: _.template($('#bin-template').html())
     initialize: ->
       @model.on 'child_validated', this.reflect_child_validation, this
@@ -203,12 +205,12 @@ jQuery ->
           if sc.type == 'bin' || !sc.get('valid')
             j += 1
           i += 1
-        console.log 'removing item', j
         $(@el).children('ul').children().eq(j).remove()
       this.render_stats()
     render_stats: ->
       # console.log 'rendering bin stats', $(@el).find('.bin-stats').first()
-      $(@el).find('.bin-stats').first().html("#{@model.get('num_complete')} / #{@model.get('num_required')} Completed")
+      $(@el).find('.bin-stats').first().html("#{@model.get('num_complete')} / #{@model.get('num_required')}")
+            .addClass(if @model.is_valid() then 'label label-success' else 'label label-info')
       $(@el).removeClass('fulfilled').removeClass('not-fulfilled')
             .addClass(if @model.is_valid() then 'fulfilled' else 'not-fulfilled')
     render: ->
@@ -229,7 +231,7 @@ jQuery ->
         else
           throw completable
         if new_view != null
-          list.append($('<li class="bin-item">').append(new_view.render().el))
+          list.append($('<li class="bin-item" id='+completable.id+'>').append(new_view.render().el))
       return this
    
   class CourseView extends Backbone.View
@@ -308,3 +310,5 @@ jQuery ->
     app_view = new SchedulePlanView({model: schedule_plan})
     app_view.render()
   
+  # This will go somewhere else eventually, but also enable accordian
+  # $(".collapse").collapse()

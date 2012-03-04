@@ -1,0 +1,60 @@
+#schedule-view { 
+  .table-bordered;
+/*  .table-zebra;*/
+/*  width:100%;*/
+  .text-overflow;
+}
+.schedule-year{.makeRow();}
+.schedule-quarter {
+  .text-overflow();
+  .box-shadow;
+  .size(10em, 17em);
+  &.will-accept {
+    .transition(background-color 0.1s linear);
+    .alert-success;
+  }
+  &.hover {
+    .transition(background-color 0.1s linear);
+    .tab-focus();
+    /* Not accepting is the default. If also will-accept rule is placed below default */
+    .alert-error;
+    &.will-accept { background-color:@green; }
+  }
+  
+}
+.bin{
+  padding-left: 1em;
+  padding-bottom:0.5em;
+  margin-bottom:0.5em;
+  .box-shadow;
+}
+
+ul.bin-items{
+  padding:0.25em;
+}
+.bin-stats{}
+.bin-title{
+  text-shadow: 0 2px 0 rgba(255,255,255,.5);
+}
+
+.bin-info {
+  .alert;
+  .alert-success;
+/*  border: 1px solid black;*/
+}
+
+div.bin.fulfilled {
+/*  .alert-success;*/
+}
+
+div.bin.not-fulfilled {
+/*  .alert-error;*/
+}
+
+.course-in-bin {
+  max-width: 100%;
+/*  .pull-right;*/
+  .btn;
+/*  .btn-large;*/
+  cursor: move;
+}
