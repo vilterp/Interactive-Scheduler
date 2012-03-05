@@ -41,13 +41,6 @@ jQuery ->
     initialize: ->
       this.set('valid', this.is_valid())
     
-    check_valid: ->
-      this.set('valid', this.is_valid())
-      if @parent?
-        @parent.check_valid()
-      else
-        console.log 'no parent'
-    
   
   class Bin extends Completable
     type: 'bin'
@@ -62,7 +55,9 @@ jQuery ->
     initialize: ->
       this.on 'child_validated', (model) =>
         this.set 'num_complete', this.num_complete()
-        this.set 'valid', (this.get('num_complete') == this.get('num_required'))
+        this.set 'valid', this.is_valid()
+        if this.get('valid')
+          this.parent?.trigger 'child_validated', this
     
     @initialize_from_json: (parent, json) ->
       sub_completables = []
@@ -78,14 +73,11 @@ jQuery ->
     
     num_complete: ->
       if this.get('sub_completables')?
-        return this.get('sub_completables').filter((completable) -> completable.get('valid')).length
+        this.get('sub_completables').filter((completable) -> completable.get('valid')).length
       else
-        return 0
+        0
     
     is_valid: ->
-      new_num = this.num_complete()
-      if this.get('num_complete') != new_num
-        this.set('num_complete', new_num)
       this.get('num_complete') == this.get('num_required')
   
   class CompletablesList extends Backbone.Collection
@@ -95,8 +87,8 @@ jQuery ->
     type: 'course'
     initialize: ->
       this.set('quarter', null) # initially not on schedule
-      this.on 'dragged_out', =>
-        this.set('valid', true)
+      this.on 'placed_on_schedule', =>
+        this.set 'valid', true
         @parent.trigger 'child_validated', this
         
       Course.cache[this.get('id')] = this
@@ -163,8 +155,8 @@ jQuery ->
           window.drag_board.stop_drag()
           the_model = dragged_view.model
           @model.get('courses').add(the_model)
-          the_model.set('quarter', @model)
-          the_model.trigger('dragged_out')
+          the_model.set 'quarter', @model
+          the_model.trigger 'placed_on_schedule'
           $(ui.draggable).detach()
       })
       return this
@@ -186,9 +178,6 @@ jQuery ->
     template: _.template($('#bin-template').html())
     initialize: ->
       @model.on 'child_validated', this.reflect_child_validation, this
-      @model.on 'child_validated', =>
-        if @model.get('valid')
-          @model.parent?.trigger 'child_validated', @model
     reflect_child_validation: (child_model) ->
       if child_model.type == 'course'
         # TODO: this is a little ugly.
@@ -208,9 +197,9 @@ jQuery ->
     render_stats: ->
       # console.log 'rendering bin stats', $(@el).find('.bin-stats').first()
       $(@el).find('.bin-stats').first().html("#{@model.get('num_complete')} / #{@model.get('num_required')}")
-            .addClass(if @model.is_valid() then 'label label-success' else 'label label-info')
+            .addClass(if @model.get('valid') then 'label label-success' else 'label label-info')
       $(@el).removeClass('fulfilled').removeClass('not-fulfilled')
-            .addClass(if @model.is_valid() then 'fulfilled' else 'not-fulfilled')
+            .addClass(if @model.get('valid') then 'fulfilled' else 'not-fulfilled')
     render: ->
       # console.log 'rendering BinView', @el
       $(@el).html(@template({
