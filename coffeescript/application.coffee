@@ -173,8 +173,7 @@ jQuery ->
   
   class BinView extends Backbone.View
     tagName: 'div'
-    attributes: 
-      class: 'bin'
+    className: bin
     template: _.template($('#bin-template').html())
     initialize: ->
       @model.on 'child_validated', this.reflect_child_validation, this
