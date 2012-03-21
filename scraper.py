@@ -1,21 +1,23 @@
 from BeautifulSoup import BeautifulSoup, NavigableString
 import sys
-import urllib
+import requests
 import re
 import codecs
 import pprint
 import logging
 import json
+import htmlentitydefs
 from model import *
 from prereqparse import *
 
-# TODO: scrape instructor
+# FIXME: errors parsing instructor. Lots of irregularities to deal with in scraper...
+  # e.g. "Instructor(s): S. Pruett-Jones (even-numbered years), J. Mateo (odd-numbered years)". oy!
+# TODO: scrape department names from timeschedules, replacing current kludgy scheme
 
 logging.getLogger().setLevel(logging.INFO)
 
 def read_url(url):
-  f = urllib.urlopen(url)
-  return f.read()
+  return unescape(requests.get(url).text).replace(u'\xa0', ' ') # replace non-breaking spaces with spaces
 
 def get_all_majors():
   logging.info('scraping list of majors...')
@@ -27,9 +29,6 @@ def get_all_majors():
     link_map[a.text] = 'http://collegecatalog.uchicago.edu' + a['href']
   return link_map
 
-def trace(thing):
-  print thing
-
 # url -> [Course Dict]
 def get_courses(url):
   doc = BeautifulSoup(read_url(url))
@@ -37,8 +36,7 @@ def get_courses(url):
   course_elems.extend(doc.findAll('div', {'class': 'courseblock subsequence'}))
   courses = []
   for course_elem in course_elems:
-    title_text = course_elem.find('p', {'class':'courseblocktitle'}).strong.text\
-                            .replace('&#160;', ' ').replace(u'\xa0', ' ')
+    title_text = course_elem.find('p', {'class':'courseblocktitle'}).strong.text
     m = re.search(r'([A-Z]{4} [0-9]{5})\.\s+(.*)\.\s+([0-9]+)\s+Units\.', title_text)
     if not m:
       logging.info('\tskipping "%s" (header of a sequence)' % title_text)
@@ -51,6 +49,7 @@ def get_courses(url):
       prereq_text = None
       notes = None
       terms_offered = None
+      instructors = []
       for text in texts:
         # scrape rereqs
         m = re.search(r'Prerequisite\(s\): (.*)', text)
@@ -60,10 +59,12 @@ def get_courses(url):
         m = re.search(r'Note\(s\): (.*)', text)
         if m:
           notes = m.group(1)
-        # scrape terms offered
-        m = re.search(r'Terms Offered: (.*)', text)
-        if m > 0:
-          terms_offered = m.group(1)
+        # scrape terms offered & instructor (on the same line...)
+        m = re.search(r'(Instructor\(s\): (.*))?\s*Terms Offered: (.*)', text)
+        if m:
+          terms_offered = m.group(3)
+          if m.group(2):
+            instructors = m.group(2).strip().split(', ')
       course = {
         'code': code,
         'title': title,
@@ -71,7 +72,8 @@ def get_courses(url):
         'notes': notes,
         'desc': desc,
         'terms_offered': terms_offered,
-        'credit': credit
+        'credit': credit,
+        'instructors': instructors
       }
       courses.append(course)
       logging.info('\tscraped course %s' % title)
@@ -85,72 +87,53 @@ def get_all_courses():
     all_courses[major] = get_courses(url)
   return all_courses
 
-def get_all_courses_cached():
+def get_all_courses_cached(cachefile):
   courses = None
   try:
-    courses = read_courses()
+    courses = read_courses(cachefile)
   except IOError:
     courses = get_all_courses()
-    write_courses(courses)
+    write_courses(courses, cachefile)
   return courses
 
-def write_courses(courses):
-  f = open('courses.py', 'w')
+def write_courses(courses, cachefile):
+  f = open(cachefile, 'w')
   f.write(pprint.pformat(courses))
   f.close()
 
-def read_courses():
-  f = open('courses.py')
+def read_courses(cachefile):
+  f = open(cachefile)
   return eval(f.read())
 
-def insert_into_db(courses):
-  logging.info('inserting course data into db...')
-  for major, courses in courses.iteritems():
-    # if all the department codes (e.g. "MATH", "ENGL") listed in this major are the same,
-    # we assume that the department code can be associated with the major name
-    # e.g. MATH <=> Mathematics
-    major_codes = [course['code'][:4] for course in courses]
-    major_name = None
-    if len(major_codes) > 0:
-      if all([x == major_codes[0] for x in major_codes]):
-        major_name = major
-    for course_dict in courses:
-      # create department record (without name)
-      course_code = course_dict['code'] # eg CMSC 16100
-      dept_code = course_code[:4]
-      res = list(Department.selectBy(abbrev=dept_code))
-      assert len(res) == 0 or len(res) == 1
-      if len(res) == 1:
-        dept = res[0]
-      elif len(res) == 0:
-        dept = Department(abbrev=dept_code, name=major_name) # this will save automatically to db
-      # create course record
-      print course_dict
-      res1 = list(Course.selectBy(title=course_dict['title'],
-                                  description=course_dict['desc'],
-                                  prereq_text=course_dict['prereq_text']))
-      assert len(res1) == 0 or len(res1) == 1
-      if len(res1) == 0:
-        # create new course record if not in db
-        course = Course(title=course_dict['title'],
-                        notes=course_dict['notes'],
-                        description=course_dict['desc'],
-                        prereq_text=course_dict['prereq_text'],
-                        prereq_json=prereqtext_to_json(course_dict['prereq_text']) if course_dict['prereq_text'] else None,
-                        terms_offered=course_dict['terms_offered'],
-                        credit=course_dict['credit'])
-      elif len(res1) == 1:
-        course = res1[0]
-      # create Code record to link course to department
-      Code(course=course, department=dept, code=course_code[-5:])
-
-def clear_db():
-  logging.info('clearing db')
-  Department.deleteBy()
-  Course.deleteBy()
-  Code.deleteBy()
+# from http://effbot.org/zone/re-sub.htm#unescape-html
+##
+# Removes HTML or XML character references and entities from a text string.
+#
+# @param text The HTML (or XML) source text.
+# @return The plain text, as a Unicode string, if necessary.
+def unescape(text):
+  def fixup(m):
+    text = m.group(0)
+    if text[:2] == "&#":
+      # character reference
+      try:
+        if text[:3] == "&#x":
+          return unichr(int(text[3:-1], 16))
+        else:
+          return unichr(int(text[2:-1]))
+      except ValueError:
+        pass
+    else:
+      # named entity
+      try:
+        text = unichr(htmlentitydefs.name2codepoint[text[1:-1]])
+      except KeyError:
+        pass
+    return text # leave as is
+  return re.sub("&#?\w+;", fixup, text)
 
 if __name__ == '__main__':
-  clear_db()
-  cs = get_all_courses_cached()
-  insert_into_db(cs)
+  if len(sys.argv) == 2:
+    write_courses(get_all_courses(), sys.argv[1])
+  else:
+    print 'usage: python %s [cache file]'

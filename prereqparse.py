@@ -2,7 +2,7 @@ import re
 import string
 import json
 
-# Dropbox version
+# FIXME: dept code sometimes parsed incorrectly.
 
 # this is hard:
 # 'BIOS 20182, 20192, or 20187 and consent of Instructor.'
@@ -68,7 +68,7 @@ def parse_preq(s):
 
     for group in prereqs:
       group_default = group[0].strip()[:4]
-      print default_dept
+      # print default_dept
       newgroup = []
       for equivalent in group:
         consentres = consentReq(equivalent)

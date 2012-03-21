@@ -13,15 +13,17 @@ class Course(SQLObject):
   prereq_json = UnicodeCol()
   credit = UnicodeCol()
   terms_offered = UnicodeCol()
-  codes = MultipleJoin('Code')
+  departments = MultipleJoin('CourseDepartment')
+  instructors = MultipleJoin('CourseInstructor')
   
   @staticmethod
   def get_by_code(code):
+    """e.g. Course.get_by_code('CMSC 16200')"""
     dept_code = code[:4]
     number = code[-5:]
     # should probably do this in a single query with a join or something...
     dept = Department.selectBy(abbrev=dept_code).getOne()
-    return Code.selectBy(department=dept, code=number).getOne().course
+    return CourseDepartment.selectBy(department=dept, code=number).getOne().course
   
   def get_dict(self):
     # shouldn't have to write this code...
@@ -33,22 +35,31 @@ class Course(SQLObject):
       'prereq_text': self.prereq_text,
       'prereq_json': self.get_prereqs(),
       'credit': self.credit,
-      'terms_offered': self.terms_offered
+      'terms_offered': self.terms_offered,
+      'instructors': [ci.instructor.catalog_listed_name for ci in self.instructors]
     }
   
   def get_prereqs(self):
     return json.loads(self.prereq_json) if self.prereq_json else None
   
 
-class Code(SQLObject):
+class CourseInstructor(SQLObject):
+  course = ForeignKey('Course')
+  instructor = ForeignKey('Instructor')
+
+class CourseDepartment(SQLObject):
   course = ForeignKey('Course')
   department = ForeignKey('Department')
   code = UnicodeCol()
 
+class Instructor(SQLObject):
+  catalog_listed_name = UnicodeCol()
+  courses_taught = MultipleJoin('CourseInstructor')
+
 class Department(SQLObject):
   name = UnicodeCol()
   abbrev = UnicodeCol()
-  listings = MultipleJoin('Code')
+  listings = MultipleJoin('CourseDepartment')
 
 class Major(SQLObject):
   name = UnicodeCol()
@@ -58,8 +69,10 @@ class Major(SQLObject):
 
 def create_tables():
   Course.createTable()
-  Code.createTable()
+  CourseDepartment.createTable()
   Department.createTable()
+  CourseInstructor.createTable()
+  Instructor.createTable()
   Major.createTable()
 
 def delete_db():
