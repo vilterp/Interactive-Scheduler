@@ -1,5 +1,11 @@
+#= include js/lib/jquery-ui/js/jquery-1.7.1.min.js
+#= include js/lib/jquery-ui/js/jquery-ui-1.8.17.custom.min.js
+#= include js/lib/underscore.js
+#= include js/lib/backbone.js
+#= include js/lib/bootstrap.js
+
 jQuery ->
-  
+
   class DragBoard extends Backbone.Model
     initialize: ->
       this.set('dragging', null)
@@ -12,53 +18,53 @@ jQuery ->
         throw 'not currently dragging'
     stop_drag: ->
       this.set('dragging_view', null)
-  
+
   window.drag_board = new DragBoard
-  
+
   # ========== Models =======================================================================
-  
+
   class SchedulePlan extends Backbone.Model
     # holds schedule state and objectives -- all of the user's state.
     # attrs: Schedule schedule, ObjectivesList objectives_list
     save_to_local_storage: ->
       throw "not implemented"
-    
+  
     @load_from_local_storage: ->
       throw "not implemented"
-    
   
+
   class ObjectivesList extends Backbone.Collection
-  
+
   class Objective extends Backbone.Model
     # represents a major, a minor, or the core requirements
     @TYPE_CORE = 0
     @TYPE_MAJOR = 1
     @TYPE_MINOR = 2
     # attrs: title, type, bin
-  
+
   class Completable extends Backbone.Model
     # attrs: valid
     initialize: ->
       this.set('valid', this.is_valid())
-    
   
+
   class Bin extends Completable
     type: 'bin'
-    
+  
     constructor: (title, num_required, sub_completables) ->
       super()
       this.set('title', title)
       this.set('num_complete', 0)
       this.set('num_required', num_required)
       this.set('sub_completables', new CompletablesList(sub_completables))
-    
+  
     initialize: ->
       this.on 'child_validated', (model) =>
         this.set 'num_complete', this.num_complete()
         this.set 'valid', this.is_valid()
         if this.get('valid')
           this.parent?.trigger 'child_validated', this
-    
+  
     @initialize_from_json: (parent, json) ->
       sub_completables = []
       for completable in json.list
@@ -70,18 +76,18 @@ jQuery ->
       for sc in sub_completables
         sc.parent = new_bin
       return new_bin
-    
+  
     num_complete: ->
       if this.get('sub_completables')?
         this.get('sub_completables').filter((completable) -> completable.get('valid')).length
       else
         0
-    
+  
     is_valid: ->
       this.get('num_complete') == this.get('num_required')
-  
+
   class CompletablesList extends Backbone.Collection
-  
+
   class Course extends Completable
     @cache = {}
     type: 'course'
@@ -90,15 +96,15 @@ jQuery ->
       this.on 'placed_on_schedule', =>
         this.set 'valid', true
         @parent.trigger 'child_validated', this
-        
+      
       Course.cache[this.get('id')] = this
       # TODO: initialize prereqs correctly
-    
+  
     is_valid: ->
       this.get('quarter') != null
-  
+
   class QuarterList extends Backbone.Collection
-  
+
   class Schedule extends Backbone.Model
     initialize: ->
       this.set('quarters', new QuarterList)
@@ -108,16 +114,16 @@ jQuery ->
       for year in [0..3]
         for season in [0..2]
           this.get('quarters').add(new Quarter({year: years[year], season: seasons[season]}))
-  
+
   class CourseList extends Backbone.Collection
-  
+
   class Quarter extends Backbone.Model
     # attrs: year, season, courses
     initialize: ->
       this.set('courses', new CourseList)
-  
+
   # ========== Views =======================================================================
-  
+
   class ScheduleView extends Backbone.View
     tagName: 'table'
     attributes:
@@ -134,8 +140,8 @@ jQuery ->
         for quarter_ind in [0..2]
           $(years.get(year_ind)).append(@subviews[year_ind*3+quarter_ind].render().el)
       return this
-    
   
+
   class QuarterView extends Backbone.View
     template: _.template($('#quarter-template').html())
     tagName: 'td'
@@ -160,7 +166,7 @@ jQuery ->
           $(ui.draggable).detach()
       })
       return this
-  
+
   class SchedulePlanView extends Backbone.View
     el: $('#scheduler-app')[0]
     initialize: ->
@@ -170,10 +176,10 @@ jQuery ->
       $(@el).find('#schedule-view-container').empty().append(@schedule_view.render().el)
       $(@el).find('#objectives-view-container').empty().append(@objectives_view.render().el)
       return this
-  
+
   class BinView extends Backbone.View
     tagName: 'div'
-    className: bin
+    className: 'bin'
     template: _.template($('#bin-template').html())
     initialize: ->
       @model.on 'child_validated', this.reflect_child_validation, this
@@ -220,7 +226,7 @@ jQuery ->
         if new_view != null
           list.append($('<li class="bin-item">').append(new_view.render().el))
       return this
-   
+ 
   class CourseView extends Backbone.View
     tagName: 'div'
     initialize: ->
@@ -234,8 +240,8 @@ jQuery ->
         revert: 'invalid'
       })
       return this
-  
-  
+
+
   class MajorView extends Backbone.View
     tagName: 'div'
     className: 'objective-major'
@@ -248,7 +254,7 @@ jQuery ->
       }))
       $(@el).find(".objective-bin").append(@bin_view.render().el)
       return this
-  
+
   class ObjectivesListView extends Backbone.View
     tagName: 'div'
     id: 'objectives-view'
@@ -268,19 +274,20 @@ jQuery ->
       _.each @subviews, (subview) =>
         the_list.append($("<li>").append(subview.render().el))
       return this
-    
   
+
+
   # ========== Initialization =======================================================================
   
   $('body').ajaxError ->
     console.log(arguments[3].toString())
-  
+
   # initialize empty schedule
   schedule = new Schedule({grad_year: 2015}) # gotta prompt user for this somehow
   objectives_list = new ObjectivesList
-  
+
   # load cmsc bin
-  $.getJSON '/static/major_reqs/cmsc.json', (cmsc_bin) =>
+  $.getJSON '/assets/major_reqs/cmsc.json', (cmsc_bin) =>
     # add CS major to objectives list
     cmsc = Bin.initialize_from_json(null, cmsc_bin)
     objectives_list.add(new Objective({
@@ -299,4 +306,3 @@ jQuery ->
     $('ul').collapse('reset')
     $('.bin-title').each (k, v) =>
       $(v).parent().parent().parent().children('ul').collapse('toggle')
-  
