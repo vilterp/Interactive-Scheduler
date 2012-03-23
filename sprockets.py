@@ -3,11 +3,11 @@ import re
 import logging
 import mimetypes
 
-# TODO: provide easy Flask integration
-# TODO: include paths should be relative...
+# TODO: provide easy Flask integration (blueprint?)
+# TODO: include paths should be relative
 # FIXME: probably breaks if you create new directory structure. should really just create dirs on copy.
-# FIXME: how to make processing errors block out the whole action, Play-style?
-# FIXME: how to recompile assets when files they require change? Oy vey...
+# FIXME: how to make processing errors block out the whole action, Play-style? probably not feasible.
+# FIXME: how to recompile assets when files they require change? Sprockets actually creates a depgraph (...)
 
 class ProcessedAsset:
   
